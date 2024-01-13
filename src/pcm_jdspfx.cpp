@@ -64,7 +64,8 @@ void *ctl_thread_loop(void *self)
                     memset(param, 0, MAX_ARG);
                     memset(val, 0, MAX_VAL);
                     strncpy(param, ctl_buf, (i-ctl_buf));
-                    strcpy (val, ctl_buf+(i-ctl_buf)+1);
+                    strcpy(val, ctl_buf+(i-ctl_buf)+1);
+                    val[strcspn(val,"\r\n=")] = 0;
 #ifdef DEBUG
                     printf("param: %s val: %s\n", param, val);
 #endif
@@ -289,7 +290,7 @@ void *ctl_thread_loop(void *self)
                         }
                     }
                     else if(!strcmp(param, "TONE_EQ")) {
-                        if (strlen(val) < 64) {
+                        if (strlen(val) < 64 && strlen(val) > 0) {
                             memset(jdsp->pCtl->str, 0, sizeof(jdsp->pCtl->str));
                             strcpy(jdsp->pCtl->str, val);
                             jdsp->pCtl->param = PROP_TONE_EQ;
@@ -329,7 +330,7 @@ void *ctl_thread_loop(void *self)
                         }
                     }
                     else if(!strcmp(param, "DDC_COEFFS")) {
-                        if (strlen(val) > 0) {
+                        if (strlen(val) > 0 && strlen(val) < 128) {
                             memset(jdsp->pCtl->str, 0, sizeof(jdsp->pCtl->str));
                             strcpy(jdsp->pCtl->str, val);
                             jdsp->pCtl->param = PROP_DDC_COEFFS;
@@ -349,7 +350,7 @@ void *ctl_thread_loop(void *self)
                         }
                     }
                     else if(!strcmp(param, "CONVOLVER_FILE")) {
-                        if (strlen(val) > 0) {
+                        if (strlen(val) > 0 && strlen(val) < 128) {
                             memset(jdsp->pCtl->str, 0, sizeof(jdsp->pCtl->str));
                             strcpy(jdsp->pCtl->str, val);
                             jdsp->pCtl->param = PROP_CONVOLVER_FILE;
@@ -369,7 +370,7 @@ void *ctl_thread_loop(void *self)
                         }
                     }
                     else if(!strcmp(param, "CONVOLVER_BENCH_C0")) {
-                        if (strlen(val) > 0) {
+                        if (strlen(val) > 0 && strlen(val) < 128) {
                             memset(jdsp->pCtl->str, 0, sizeof(jdsp->pCtl->str));
                             strcpy(jdsp->pCtl->str, val);
                             jdsp->pCtl->param = PROP_CONVOLVER_BENCH_C0;
@@ -379,7 +380,7 @@ void *ctl_thread_loop(void *self)
                         }
                     }
                     else if(!strcmp(param, "CONVOLVER_BENCH_C1")) {
-                        if (strlen(val) > 0) {
+                        if (strlen(val) > 0 && strlen(val) < 128) {
                             memset(jdsp->pCtl->str, 0, sizeof(jdsp->pCtl->str));
                             strcpy(jdsp->pCtl->str, val);
                             jdsp->pCtl->param = PROP_CONVOLVER_BENCH_C1;
@@ -1001,6 +1002,7 @@ static int jdsp_close(snd_pcm_extplug_t *ext) {
 #ifdef DEBUG
     printf("%s\n", __func__);
 #endif
+    jdsp->init_done = false;
     if(jdsp->ctl_thread_running) {
         jdsp->ctl_thread_running = false;
         pthread_cancel(jdsp->ctl_thread);
@@ -1015,6 +1017,7 @@ static int jdsp_close(snd_pcm_extplug_t *ext) {
     if (jdsp->effectDspMain != NULL) {
         delete jdsp->effectDspMain;
     }
+    free(jdsp);
     return 0;
 }
 
@@ -1022,7 +1025,7 @@ static int jdsp_init(snd_pcm_extplug_t *ext)
 {
     snd_pcm_jdspfx_t *jdsp = (snd_pcm_jdspfx_t *)ext;
 
-    if(jdsp->fx_enabled) {
+    if(jdsp->fx_enabled || jdsp->init_done) {
         if(jdsp->samplerate != ext->rate) {
                 if(ext->format == SND_PCM_FORMAT_S16_LE)
                     jdsp->format = s16le;
@@ -1039,73 +1042,65 @@ static int jdsp_init(snd_pcm_extplug_t *ext)
         return 0;
     }
 
-    if(jdsp_cfg_read(jdsp) <= 0) {
-        /* initialize properties */
-        jdsp->tube_enabled = FALSE;
-        jdsp->tube_drive = 0;
-
-        jdsp->bass_mode = 0;
-        jdsp->bass_filtertype = 0;
-        jdsp->bass_freq = 55;
-        jdsp->bass_enabled = FALSE;
-
-        jdsp->headset_osf=1;
-        jdsp->headset_delay=0;
-        jdsp->headset_inputlpf=200;
-        jdsp->headset_basslpf=50;
-        jdsp->headset_damplpf=200;
-        jdsp->headset_outputlpf=200;
-        jdsp->headset_reflection_amount=0;
-        jdsp->headset_reflection_factor=0.5;
-        jdsp->headset_reflection_width=0;
-        jdsp->headset_finaldry=0;
-        jdsp->headset_finalwet=0;
-        jdsp->headset_width=0;
-        jdsp->headset_wet=0;
-        jdsp->headset_lfo_wander=0.1;
-        jdsp->headset_bassboost=0;
-        jdsp->headset_lfo_spin=0;
-        jdsp->headset_decay=0.1;
-        jdsp->headset_enabled = FALSE;
-
-        jdsp->stereowide_mcoeff = 0;
-        jdsp->stereowide_scoeff = 0;
-        jdsp->stereowide_enabled = FALSE;
-
-        jdsp->bs2b_enabled = FALSE;
-        jdsp->bs2b_fcut = 700;
-        jdsp->bs2b_feed = 10;
-
-        jdsp->compression_pregain = 12;
-        jdsp->compression_threshold = -60;
-        jdsp->compression_knee = 30;
-        jdsp->compression_ratio = 12;
-        jdsp->compression_attack = 1;
-        jdsp->compression_release = 24;
-        jdsp->compression_enabled = FALSE;
-
-        jdsp->tone_filtertype = 0;
-        jdsp->tone_enabled = FALSE;
-        memset(jdsp->tone_eq, 0, sizeof(jdsp->tone_eq));
-
-        jdsp->lim_threshold = 0;
-        jdsp->lim_release = 60;
-        jdsp->ddc_enabled = FALSE;
-        memset(jdsp->ddc_coeffs, 0, sizeof(jdsp->ddc_coeffs));
-
-        jdsp->convolver_enabled = FALSE;
-        memset(jdsp->convolver_bench_c0, 0, sizeof(jdsp->convolver_bench_c0));
-        strcpy(jdsp->convolver_bench_c0 , "0.000000");
-        memset(jdsp->convolver_bench_c1, 0, sizeof(jdsp->convolver_bench_c1));
-        strcpy(jdsp->convolver_bench_c1 , "0.000000");
-        memset(jdsp->convolver_file, 0, sizeof(jdsp->convolver_file));
-        jdsp->convolver_gain = 0;
-        jdsp->convolver_quality = 100;
-    }
+    /* initialize properties */
+    jdsp->tube_enabled = FALSE;
+    jdsp->tube_drive = 0;
+    jdsp->bass_mode = 0;
+    jdsp->bass_filtertype = 0;
+    jdsp->bass_freq = 55;
+    jdsp->bass_enabled = FALSE;
+    jdsp->headset_osf=1;
+    jdsp->headset_delay=0;
+    jdsp->headset_inputlpf=200;
+    jdsp->headset_basslpf=50;
+    jdsp->headset_damplpf=200;
+    jdsp->headset_outputlpf=200;
+    jdsp->headset_reflection_amount=0;
+    jdsp->headset_reflection_factor=0.5;
+    jdsp->headset_reflection_width=0;
+    jdsp->headset_finaldry=0;
+    jdsp->headset_finalwet=0;
+    jdsp->headset_width=0;
+    jdsp->headset_wet=0;
+    jdsp->headset_lfo_wander=0.1;
+    jdsp->headset_bassboost=0;
+    jdsp->headset_lfo_spin=0;
+    jdsp->headset_decay=0.1;
+    jdsp->headset_enabled = FALSE;
+    jdsp->stereowide_mcoeff = 0;
+    jdsp->stereowide_scoeff = 0;
+    jdsp->stereowide_enabled = FALSE;
+    jdsp->bs2b_enabled = FALSE;
+    jdsp->bs2b_fcut = 700;
+    jdsp->bs2b_feed = 10;
+    jdsp->compression_pregain = 12;
+    jdsp->compression_threshold = -60;
+    jdsp->compression_knee = 30;
+    jdsp->compression_ratio = 12;
+    jdsp->compression_attack = 1;
+    jdsp->compression_release = 24;
+    jdsp->compression_enabled = FALSE;
+    jdsp->tone_filtertype = 0;
+    jdsp->tone_enabled = FALSE;
+    memset(jdsp->tone_eq, 0, sizeof(jdsp->tone_eq));
+    jdsp->lim_threshold = 0;
+    jdsp->lim_release = 60;
+    jdsp->ddc_enabled = FALSE;
+    memset(jdsp->ddc_coeffs, 0, sizeof(jdsp->ddc_coeffs));
+    jdsp->convolver_enabled = FALSE;
+    memset(jdsp->convolver_bench_c0, 0, sizeof(jdsp->convolver_bench_c0));
+    strcpy(jdsp->convolver_bench_c0 , "0.000000");
+    memset(jdsp->convolver_bench_c1, 0, sizeof(jdsp->convolver_bench_c1));
+    strcpy(jdsp->convolver_bench_c1 , "0.000000");
+    memset(jdsp->convolver_file, 0, sizeof(jdsp->convolver_file));
+    jdsp->convolver_gain = 0;
+    jdsp->convolver_quality = 100;
 
     jdsp->pCtl = (jdsp_param_t *) malloc(sizeof(jdsp_param_t));
     jdsp->pCtl->pUpdate = false;
     jdsp->pCtl->param = 0;
+
+    jdsp_cfg_read(jdsp);
 
     /* initialize private resources */
     jdsp->effectDspMain = NULL;
@@ -1142,7 +1137,7 @@ static int jdsp_init(snd_pcm_extplug_t *ext)
         jdsp->ctl_thread_running = false;
         return -1;
     }
-
+    jdsp->init_done = true;
     return 0;
 }
 

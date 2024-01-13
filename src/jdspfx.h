@@ -80,7 +80,7 @@ typedef struct jdsp_param_s {
         int32_t    i32;
         int16_t    i16;
         int8_t     i8;
-        char       str[65];
+        char       str[128];
     };
 } jdsp_param_t;
 
@@ -95,6 +95,8 @@ enum formats{
 typedef struct snd_pcm_jdspfx {
     snd_pcm_extplug_t ext;
 
+    bool init_done = false;
+    
     pthread_t ctl_thread;
     pthread_mutex_t lock;
     bool ctl_thread_running = false;

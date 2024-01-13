@@ -25,9 +25,10 @@ int32_t Effect::configure(void* pCmdData, effect_buffer_access_e* mAccessMode)
     dsp_config_t *cfg = (dsp_config_t*)pCmdData;
     formatFloatModeInt32Mode = cfg->format;
     mSamplingRate = cfg->samplingRate;
-
+#ifdef DEBUG
     printf("[I] Samplerate updated: %d\n",(int)mSamplingRate);
     printf("[I] Float/Int mode updated: %d\n",formatFloatModeInt32Mode);
+#endif
     return 0;
 
     /**/

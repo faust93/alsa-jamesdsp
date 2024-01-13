@@ -1050,7 +1050,9 @@ void EffectDSPMain::refreshStereoWiden(uint32_t m,uint32_t s)
 {
     mMatrixMCoeff = m/1000.0f; //Min-Max: 0-10000 -> x/1000 -> 0.0-10.0
     mMatrixSCoeff = s/1000.0f;
+#ifdef DEBUG
     printf("[I] Stereo widener - MCoeff: %f, SCoeff: %f\n",mMatrixMCoeff,mMatrixSCoeff);
+#endif
 	/*switch (parameter)
 	{
 	case 0: // A Bit
