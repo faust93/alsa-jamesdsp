@@ -3,11 +3,9 @@
  * github.com/ThePBone
 **********************/
 
-#ifndef GST_PLUGIN_JAMESDSP_GSTINTERFACE_H
-#define GST_PLUGIN_JAMESDSP_GSTINTERFACE_H
 #include "EffectDSPMain.h"
-#include "gstjdspfx.h"
 #include "JdspImpResToolbox.c"
+#include "jdspfx.h"
 #include <stdio.h>
 #include <stdint.h>
 #include <math.h>
@@ -286,11 +284,14 @@ void command_set_eq(EffectDSPMain *intf,char* eq){
 }
 ///Sends command-codes without parameters
 void config_set_px0_vx0x0(EffectDSPMain *intf,uint32_t param){
-    intf->command(param,NULL,NULL,NULL,NULL);
+    intf->command(param,0,NULL,NULL,NULL);
 }
+
+reverbdata_t *r = NULL;
 ///Prepare and send reverb data
-void command_set_reverb(EffectDSPMain *intf,Gstjdspfx * self){
-    reverbdata_t *r = (reverbdata_t*)malloc(sizeof(*r));
+void command_set_reverb(EffectDSPMain *intf, snd_pcm_jdspfx_t *self){
+    if(r == NULL)
+        r = (reverbdata_t*)malloc(sizeof(*r));
     r->oversamplefactor = self->headset_osf;
     r->ertolate = self->headset_reflection_amount;
     r->erefwet = self->headset_finalwet;
@@ -362,4 +363,3 @@ void helper_strreplace(char *target, const char *needle, const char *replacement
     // write altered string back to target
     strcpy(target, buffer);
 }
-#endif //GST_PLUGIN_JAMESDSP_GSTINTERFACE_H

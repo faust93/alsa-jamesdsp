@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -30,7 +31,7 @@ int countChars(char* s, char c)
     int res = 0;
     if(s==NULL){
         printf("[E] CountChars/DDCParser: input buffer is null\n");
-        return;
+        return -1;
     }
     for (int i=0;i<strlen(s);i++)
         if (s[i] == c)
