@@ -465,10 +465,10 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                  }
                  else if(!strcmp(param, "MASTER_LIMRELEASE")) {
                     float_t v = atof(val);
-                    if(v >= 1.5 && v <= 200) {
+                    if(v >= 1.5 && v <= 2000) {
                         self->lim_release = v;
                      } else {
-                         printf("Value out of range. Accepted values are: [1.5-200] (float)");
+                         printf("Value out of range. Accepted values are: [1.5-2000] (float)");
                      }
                  }
                  else if(!strcmp(param, "DDC_ENABLE")) {

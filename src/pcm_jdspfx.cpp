@@ -311,7 +311,7 @@ void *ctl_thread_loop(void *self)
                     }
                     else if(!strcmp(param, "MASTER_LIMRELEASE")) {
                        float_t v = atof(val);
-                       if(v >= 1.5 && v <= 200) {
+                       if(v >= 1.5 && v <= 2000) {
                             jdsp->pCtl->f32 = v;
                             jdsp->pCtl->param = PROP_MASTER_LIMRELEASE;
                             jdsp->pCtl->pUpdate = true;
