@@ -6,6 +6,8 @@
 #define TRUE  1
 #define FALSE 0
 
+#define CMD_QUEUE_LEN 20
+
 enum {
     PROP_0,
 
@@ -73,7 +75,7 @@ enum {
 };
 
 typedef struct jdsp_param_s {
-    bool pUpdate;
+    bool pUpdate = false;
     int  param;
     union {
         float      f32;
@@ -105,6 +107,8 @@ typedef struct snd_pcm_jdspfx {
     char settings_path[129];
 
     jdsp_param_t *pCtl;
+    uint32_t pCtlQidx = 0;
+    bool pCtl_commit = false;
 
     uint32_t samplerate = 0;
     uint32_t format = 0;

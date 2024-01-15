@@ -137,6 +137,7 @@ While processing audio DSP parameters can be tuned in real time using control pi
 echo -n "FX_ENABLE=1" > /tmp/.jdspfx.ctl
 echo -n "CONVOLVER_FILE=/tmp/boom.irs"  > /tmp/.jdspfx.ctl
 echo -n "CONVOLVER_ENABLE=1" > /tmp/.jdspfx.ctl
+echo -n "COMMIT" > /tmp/.jdspfx.ctl
 ~~~
 
 ##### Properties description
