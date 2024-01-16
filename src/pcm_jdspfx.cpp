@@ -35,7 +35,7 @@
 
 #define CTL_BUFFSIZE 256
 #define MAX_ARG 129
-#define MAX_VAL 65
+#define MAX_VAL 129
 
 extern "C" {
 
@@ -65,7 +65,6 @@ void *ctl_thread_loop(void *self)
 #endif
                     jdsp->pCtl_commit = true;
                     jdsp->pCtlQidx = 0;
-                    jdsp_cfg_write(jdsp);
                     continue;
                 }
                 char *i = strchr(ctl_buf,'=');
@@ -321,7 +320,7 @@ void *ctl_thread_loop(void *self)
                         }
                     }
                     else if(!strcmp(param, "TONE_EQ")) {
-                        if (strlen(val) < 64 && strlen(val) > 0) {
+                        if (strlen(val) < 100 && strlen(val) > 0) {
                             memset(jdsp->pCtl[jdsp->pCtlQidx].str, 0, sizeof(jdsp->pCtl[jdsp->pCtlQidx].str));
                             strcpy(jdsp->pCtl[jdsp->pCtlQidx].str, val);
                             jdsp->pCtl[jdsp->pCtlQidx].param = PROP_TONE_EQ;
@@ -762,7 +761,7 @@ static void jdspfx_set_property(snd_pcm_jdspfx_t *self) {
                     break;
                 case PROP_TONE_EQ:
                 {
-                    if (strlen(self->pCtl[i].str) < 64) {
+                    if (strlen(self->pCtl[i].str) < 100) {
                         memset (self->tone_eq, 0, sizeof(self->tone_eq));
                         strcpy(self->tone_eq, self->pCtl[i].str);
                         command_set_eq (self->effectDspMain, self->tone_eq);
@@ -917,6 +916,7 @@ static void jdspfx_set_property(snd_pcm_jdspfx_t *self) {
             }
         }
     }
+    jdsp_cfg_write(self);
 }
 
 /* sync all parameters to fx core */
@@ -928,10 +928,10 @@ static void sync_all_parameters(snd_pcm_jdspfx_t *self) {
 
     // analog modelling
     command_set_px4_vx2x1(self->effectDspMain,
-                          1206, (int16_t) self->tube_drive);
+                          1206, (int16_t) self->tube_enabled);
 
     command_set_px4_vx2x1(self->effectDspMain,
-                          150, self->tube_enabled);
+                          150, self->tube_drive);
 
     // bassboost
     command_set_px4_vx2x1(self->effectDspMain,
@@ -984,11 +984,13 @@ static void sync_all_parameters(snd_pcm_jdspfx_t *self) {
                           1200, self->compression_enabled);
 
     // mixed equalizer
-    command_set_eq (self->effectDspMain, self->tone_eq);
     command_set_px4_vx2x1(self->effectDspMain,
                           151, (int16_t)self->tone_filtertype);
     command_set_px4_vx2x1(self->effectDspMain,
                           1202, self->tone_enabled);
+    command_set_eq (self->effectDspMain, self->tone_eq);
+
+
 
     // limiter
     command_set_limiter(self->effectDspMain,self->lim_threshold,self->lim_release);
@@ -1033,29 +1035,29 @@ static snd_pcm_sframes_t jdsp_transfer(snd_pcm_extplug_t *ext,
 
         switch(jdsp->format){
             case s16le:
-                in->frameCount = (size_t) size;
+                in->frameCount = size;
                 in->s16 = (int16_t *)(src);
                 out->frameCount = size;
                 out->s16 = (int16_t *)(dst);
                 jdsp->effectDspMain->process(in, out);
                 break;
             case s32le:
-                in->frameCount = (size_t) size;
+                in->frameCount = size;
                 in->s32 = (int32_t *)(src);
                 out->frameCount = size;
                 out->s32 = (int32_t *)(dst);
                 jdsp->effectDspMain->process(in, out);
                 break;
             case f32le:
-                in->frameCount = (size_t) size;
+                in->frameCount = size;
                 in->f32 = (float *)(src);
                 out->frameCount = size;
                 out->f32 = (float*)(dst);
                 jdsp->effectDspMain->process(in, out);
                 break;
         }
-        delete in;
-        delete out;
+        free(in);
+        free(out);
     } else {
         memcpy(dst, src, snd_pcm_frames_to_bytes(ext->pcm, size));
     }

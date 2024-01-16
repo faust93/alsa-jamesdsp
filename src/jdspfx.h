@@ -171,7 +171,7 @@ typedef struct snd_pcm_jdspfx {
     // mixed equalizer
     int8_t tone_enabled;
     int32_t tone_filtertype;
-    char tone_eq[64];
+    char tone_eq[100];
 
     // master
     float_t lim_threshold;
@@ -452,7 +452,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                      }
                  }
                  else if(!strcmp(param, "TONE_EQ")) {
-                     if (strlen(val) < 64) {
+                     if (strlen(val) < 100) {
                          memset(self->tone_eq, 0, sizeof(self->tone_eq));
                          strncpy(self->tone_eq, val, strlen(val)-1);
                      } else {

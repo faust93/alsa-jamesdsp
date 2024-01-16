@@ -86,13 +86,11 @@ protected:
 	double pregain, threshold, knee, ratio, attack, release, tubedrive, bassBoostCentreFreq, convGaindB, mMatrixMCoeff, mMatrixSCoeff;
 	int16_t bassBoostStrength, bassBoostFilterType, eqFilterType, bs2bLv, compressionEnabled, bassBoostEnabled, equalizerEnabled, reverbEnabled,
 	stereoWidenEnabled, convolverEnabled, convolverReady, bassLpReady, eqFIRReady, analogModelEnable, bs2bEnabled, viperddcEnabled;
-	int16_t mPreset, samplesInc, stringIndex, impChannels, previousimpChannels;
-
+	int16_t mPreset, samplesInc, stringIndex, impChannels, previousimpChannels, bs2bfcut, bs2bfeed;
 
     reverbdata_t *r = NULL;
 
 	int32_t impulseLengthActual, convolverNeedRefresh;
-
 
 	int isBenchData;
 	double *benchmarkValue[2];
