@@ -33,6 +33,7 @@ void command_set_px4_vx2x1(EffectDSPMain *intf,int32_t cmd,int16_t value){
     cmd_data_int[1] = value;
 
     intf->command(EFFECT_CMD_SET_PARAM, sizeof(unsigned char)*20,cep,NULL,NULL);
+    free(cep);
 }
 ///Sends two 16bit ints
 void command_set_px4_vx2x2(EffectDSPMain *intf,int32_t cmd,int16_t valueA,int16_t valueB){
@@ -50,6 +51,7 @@ void command_set_px4_vx2x2(EffectDSPMain *intf,int32_t cmd,int16_t valueA,int16_
     cmd_data_int16[3] = valueB;
 
     intf->command(EFFECT_CMD_SET_PARAM, sizeof(unsigned char)*20,cep,NULL,NULL);
+    free(cep);
 }
 ///Sends 32bit float arrays
 void command_set_px4_vx4x60(EffectDSPMain *intf,int32_t cmd,float *values){
@@ -63,6 +65,7 @@ void command_set_px4_vx4x60(EffectDSPMain *intf,int32_t cmd,float *values){
         cmd_data_int[1 + i] = (float) values[i];
 
     intf->command(EFFECT_CMD_SET_PARAM, sizeof(float)*NUM_BANDS+5*sizeof(int32_t),cep,NULL,NULL);
+    free(cep);
 }
 ///Sends two 32bit float values (as an array)
 void command_set_px4_vx8x2(EffectDSPMain *intf,int32_t cmd,float *values){
@@ -76,6 +79,7 @@ void command_set_px4_vx8x2(EffectDSPMain *intf,int32_t cmd,float *values){
         cmd_data_int[1 + i] = (float) values[i];
 
     intf->command(EFFECT_CMD_SET_PARAM, sizeof(float)*6,cep,NULL,NULL);
+    free(cep);
 }
 ///Sends two 32bit int values (as an array)
 void command_set_px4_vx8x2(EffectDSPMain *intf,int32_t cmd,int32_t *values){
@@ -89,6 +93,7 @@ void command_set_px4_vx8x2(EffectDSPMain *intf,int32_t cmd,int32_t *values){
         cmd_data_int[1 + i] = (int32_t) values[i];
 
     intf->command(EFFECT_CMD_SET_PARAM, sizeof(int32_t)*6,cep,NULL,NULL);
+    free(cep);
 }
 ///Sends one 256 byte char array
 void command_set_px4_vx256x1(EffectDSPMain *intf,int32_t cmd,const char *buffer){
@@ -106,6 +111,7 @@ void command_set_px4_vx256x1(EffectDSPMain *intf,int32_t cmd,const char *buffer)
         cmd_data_char[4 + i] = (char) buffer[i]; //Offset +4 because the int32_t cmd-id is in front of it
 
     intf->command(EFFECT_CMD_SET_PARAM, 4*sizeof(int32_t)+256*sizeof(char),cep,NULL,NULL);
+    free(cep);
 }
 ///Sends 10 floats as an array
 void command_set_px4_vx10x4(EffectDSPMain *intf,int32_t cmd,float *values){
@@ -120,6 +126,7 @@ void command_set_px4_vx10x4(EffectDSPMain *intf,int32_t cmd,float *values){
         cmd_data_float[1 + i] = (float) values[i];
 
     intf->command(EFFECT_CMD_SET_PARAM, sizeof(float)*10+5*sizeof(int32_t),cep,NULL,NULL);
+    free(cep);
 }
 ///Configure buffer
 void command_set_buffercfg(EffectDSPMain *intf,int32_t samplerate,int32_t format){
@@ -140,6 +147,7 @@ void command_set_buffercfg(EffectDSPMain *intf,int32_t samplerate,int32_t format
     cep->samplingRate = (uint32_t)samplerate;
     cep->format = result;
     intf->command(EFFECT_CMD_SET_CONFIG, sizeof(uint32_t)+sizeof(uint8_t),cep,NULL,NULL);
+    free(cep);
 }
 ///Prepare and send Convolver data
 void command_set_convolver(EffectDSPMain *intf,char* path,float gain,int quality,char* str_c0,char* str_c1,int32_t sr){
@@ -165,7 +173,6 @@ void command_set_convolver(EffectDSPMain *intf,char* path,float gain,int quality
         printf("[E] Convolver benchmark data not (yet) set\n");
         return;
     }
-
 
     float *c0 = (float*)calloc(10,sizeof(float));
     float *c1 = (float*)calloc(10,sizeof(float));
@@ -201,6 +208,8 @@ void command_set_convolver(EffectDSPMain *intf,char* path,float gain,int quality
     printf("---- Format: %d, Frames: %d, ImpulseCutted: %d, Channels: %d, Gain: %f, Quality %d\n",impinfo[3],impinfo[1],impulseCutted,impinfo[0],gain,quality);
 
     intf->_loadConv(impulseCutted,impinfo[0],gain,impulseResponse);
+    free(c0);
+    free(c1);
 }
 ///Load and send DDC data
 void command_set_ddc(EffectDSPMain *intf,char* path,bool enabled){
@@ -246,6 +255,7 @@ void command_set_limiter(EffectDSPMain *intf,float thres,float release){
     data[0] = thres;
     data[1] = release;
     command_set_px4_vx8x2(intf,1500,data);
+    free(data);
 }
 ///Parse and send eq data as 32-bit float array
 void command_set_eq(EffectDSPMain *intf,char* eq){
