@@ -1069,6 +1069,10 @@ static int jdsp_close(snd_pcm_extplug_t *ext) {
 #ifdef DEBUG
     printf("%s\n", __func__);
 #endif
+    if(!jdsp->init_done) {
+        free(jdsp);
+        return 0;
+    }
     jdsp->init_done = false;
     if(jdsp->ctl_thread_running) {
         jdsp->ctl_thread_running = false;
