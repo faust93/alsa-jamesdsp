@@ -85,7 +85,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [0|1]");
+                            SNDERR("FX_ENABLE value out of range. Accepted values are: [0|1]");
                         }
                     }
                     else if(!strcmp(param, "TUBE_ENABLE")) {
@@ -96,7 +96,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [0|1]");
+                            SNDERR("TUBE_ENABLE value out of range. Accepted values are: [0|1]");
                         }
                     }
                     else if(!strcmp(param, "TUBE_DRIVE")) {
@@ -107,7 +107,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [0-12000]");
+                            SNDERR("TUBE_DRIVE value out of range. Accepted values are: [0-12000]");
                         }
                     }
                     else if(!strcmp(param, "BASS_ENABLE")) {
@@ -118,7 +118,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [0|1]");
+                            SNDERR("BASS_ENABLE value out of range. Accepted values are: [0|1]");
                         }
                     }
                     else if(!strcmp(param, "BASS_MODE")) {
@@ -129,7 +129,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [0-3000]");
+                            SNDERR("BASS_MODE value out of range. Accepted values are: [0-3000]");
                         }
                     }
                     else if(!strcmp(param, "BASS_FILTERTYPE")) {
@@ -140,7 +140,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [0|1]");
+                            SNDERR("BASS_FILTERTYPE value out of range. Accepted values are: [0|1]");
                         }
                     }
                     else if(!strcmp(param, "BASS_FREQ")) {
@@ -151,7 +151,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [30-300]");
+                            SNDERR("BASS_FREQ value out of range. Accepted values are: [30-300]");
                         }
                     }
                     else if(!strcmp(param, "STEREOWIDE_ENABLE")) {
@@ -162,7 +162,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [0|1]");
+                            SNDERR("STEREOWIDE_ENABLE value out of range. Accepted values are: [0|1]");
                         }
                     }
                     else if(!strcmp(param, "STEREOWIDE_MCOEFF")) {
@@ -173,7 +173,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [0-10000]");
+                            SNDERR("STEREOWIDE_MCOEFF value out of range. Accepted values are: [0-10000]");
                         }
                     }
                     else if(!strcmp(param, "STEREOWIDE_SCOEFF")) {
@@ -184,7 +184,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [0-10000]");
+                            SNDERR("STEREOWIDE_SCOEFF value out of range. Accepted values are: [0-10000]");
                         }
                     }
                     else if(!strcmp(param, "BS2B_ENABLE")) {
@@ -195,7 +195,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [0|1]");
+                            SNDERR("BS2B_ENABLE value out of range. Accepted values are: [0|1]");
                         }
                     }
                     else if(!strcmp(param, "BS2B_FCUT")) {
@@ -206,7 +206,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [300-2000]");
+                            SNDERR("BS2B_FCUT value out of range. Accepted values are: [300-2000]");
                         }
                     }
                     else if(!strcmp(param, "BS2B_FEED")) {
@@ -217,7 +217,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [10-150]");
+                            SNDERR("BS2B_FEED value out of range. Accepted values are: [10-150]");
                         }
                     }
                     else if(!strcmp(param, "COMPRESSOR_ENABLE")) {
@@ -228,7 +228,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [0|1]");
+                            SNDERR("COMPRESSOR_ENABLE value out of range. Accepted values are: [0|1]");
                         }
                     }
                     else if(!strcmp(param, "COMPRESSOR_PREGAIN")) {
@@ -239,7 +239,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [0-24]");
+                            SNDERR("COMPRESSOR_PREGAIN value out of range. Accepted values are: [0-24]");
                         }
                     }
                     else if(!strcmp(param, "COMPRESSOR_THRESHOLD")) {
@@ -250,7 +250,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [-80 - 0]");
+                            SNDERR("COMPRESSOR_THRESHOLD value out of range. Accepted values are: [-80 - 0]");
                         }
                     }
                     else if(!strcmp(param, "COMPRESSOR_KNEE")) {
@@ -261,7 +261,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [0-40]");
+                            SNDERR("COMPRESSOR_KNEE value out of range. Accepted values are: [0-40]");
                         }
                     }
                     else if(!strcmp(param, "COMPRESSOR_RATIO")) {
@@ -272,7 +272,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [-20 - 20]");
+                            SNDERR("COMPRESSOR_RATIO value out of range. Accepted values are: [-20 - 20]");
                         }
                     }
                     else if(!strcmp(param, "COMPRESSOR_ATTACK")) {
@@ -283,7 +283,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [1-1000]");
+                            SNDERR("COMPRESSOR_ATTACK value out of range. Accepted values are: [1-1000]");
                         }
                     }
                     else if(!strcmp(param, "COMPRESSOR_RELEASE")) {
@@ -294,7 +294,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [1-1000]");
+                            SNDERR("COMPRESSOR_RELEASE value out of range. Accepted values are: [1-1000]");
                         }
                     }
                     else if(!strcmp(param, "TONE_ENABLE")) {
@@ -305,7 +305,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [0|1]");
+                            SNDERR("TONE_ENABLE value out of range. Accepted values are: [0|1]");
                         }
                     }
                     else if(!strcmp(param, "TONE_FILTERTYPE")) {
@@ -316,7 +316,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [0-1]");
+                            SNDERR("TONE_FILTERTYPE value out of range. Accepted values are: [0-1]");
                         }
                     }
                     else if(!strcmp(param, "TONE_EQ")) {
@@ -327,7 +327,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [0;0;0;0;0;0;0;0;0;0;0;0;0;0;0]");
+                            SNDERR("TONE_EQ value out of range. Accepted values are: [0;0;0;0;0;0;0;0;0;0;0;0;0;0;0]");
                         }
                     }
                     else if(!strcmp(param, "MASTER_LIMTHRESHOLD")) {
@@ -338,7 +338,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [-60-0] (float)");
+                            SNDERR("MASTER_LIMTHRESHOLD value out of range. Accepted values are: [-60-0] (float)");
                         }
                     }
                     else if(!strcmp(param, "MASTER_LIMRELEASE")) {
@@ -349,7 +349,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [1.5-200] (float)");
+                            SNDERR("MASTER_LIMRELEASE value out of range. Accepted values are: [1.5-200] (float)");
                         }
                     }
                     else if(!strcmp(param, "DDC_ENABLE")) {
@@ -360,7 +360,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [0|1]");
+                            SNDERR("DDC_ENABLE value out of range. Accepted values are: [0|1]");
                         }
                     }
                     else if(!strcmp(param, "DDC_COEFFS")) {
@@ -371,7 +371,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [/path/file.vdc]");
+                            SNDERR("DDC_COEFFS value out of range. Accepted values are: [/path/file.vdc]");
                         }
                     }
                     else if(!strcmp(param, "CONVOLVER_ENABLE")) {
@@ -382,7 +382,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [0|1]");
+                            SNDERR("CONVOLVER_ENABLE value out of range. Accepted values are: [0|1]");
                         }
                     }
                     else if(!strcmp(param, "CONVOLVER_FILE")) {
@@ -393,7 +393,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [/path/file.irs]");
+                            SNDERR("CONVOLVER_FILE value out of range. Accepted values are: [/path/file.irs]");
                         }
                     }
                     else if(!strcmp(param, "CONVOLVER_GAIN")) {
@@ -404,7 +404,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [-80 - 30] (float)");
+                            SNDERR("CONVOLVER_GAIN value out of range. Accepted values are: [-80 - 30] (float)");
                         }
                     }
                     else if(!strcmp(param, "CONVOLVER_BENCH_C0")) {
@@ -415,7 +415,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [0.000000]");
+                            SNDERR("CONVOLVER_BENCH_C0 value out of range. Accepted values are: [0.000000]");
                         }
                     }
                     else if(!strcmp(param, "CONVOLVER_BENCH_C1")) {
@@ -426,7 +426,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [0.000000]");
+                            SNDERR("CONVOLVER_BENCH_C1 value out of range. Accepted values are: [0.000000]");
                         }
                     }
                     else if(!strcmp(param, "HEADSET_ENABLE")) {
@@ -437,7 +437,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [0|1]");
+                            SNDERR("HEADSET_ENABLE value out of range. Accepted values are: [0|1]");
                         }
                     }
                     else if(!strcmp(param, "HEADSET_OSF")) {
@@ -448,7 +448,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [0-4]");
+                            SNDERR("HEADSET_OSF value out of range. Accepted values are: [0-4]");
                         }
                     }
                     else if(!strcmp(param, "HEADSET_REFLECTION_AMOUNT")) {
@@ -459,7 +459,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [0.0-1.0] (float)");
+                            SNDERR("HEADSET_REFLECTION_AMOUNT value out of range. Accepted values are: [0.0-1.0] (float)");
                         }
                     }
                     else if(!strcmp(param, "HEADSET_FINALWET")) {
@@ -470,7 +470,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [-70 - 10] (float)");
+                            SNDERR("HEADSET_FINALWET value out of range. Accepted values are: [-70 - 10] (float)");
                         }
                     }
                     else if(!strcmp(param, "HEADSET_FINALDRY")) {
@@ -481,7 +481,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [-70 - 10] (float)");
+                            SNDERR("HEADSET_FINALDRY value out of range. Accepted values are: [-70 - 10] (float)");
                         }
                     }
                     else if(!strcmp(param, "HEADSET_REFLECTION_FACTOR")) {
@@ -492,7 +492,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [0.5-2.5] (float)");
+                            SNDERR("HEADSET_REFLECTION_FACTOR value out of range. Accepted values are: [0.5-2.5] (float)");
                         }
                     }
                     else if(!strcmp(param, "HEADSET_REFLECTION_WIDTH")) {
@@ -503,7 +503,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [-1 - 1] (float)");
+                            SNDERR("HEADSET_REFLECTION_WIDTH value out of range. Accepted values are: [-1 - 1] (float)");
                         }
                     }
                     else if(!strcmp(param, "HEADSET_WIDTH")) {
@@ -514,7 +514,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [0-1] (float)");
+                            SNDERR("HEADSET_WIDTH value out of range. Accepted values are: [0-1] (float)");
                         }
                     }
                     else if(!strcmp(param, "HEADSET_WET")) {
@@ -525,7 +525,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [-70 - 10] (float)");
+                            SNDERR("HEADSET_WET value out of range. Accepted values are: [-70 - 10] (float)");
                         }
                     }
                     else if(!strcmp(param, "HEADSET_LFO_WANDER")) {
@@ -536,7 +536,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [0.1 - 0.6] (float)");
+                            SNDERR("HEADSET_LFO_WANDER value out of range. Accepted values are: [0.1 - 0.6] (float)");
                         }
                     }
                     else if(!strcmp(param, "HEADSET_BASSBOOST")) {
@@ -547,7 +547,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [0-0.5] (float)");
+                            SNDERR("HEADSET_BASSBOOST value out of range. Accepted values are: [0-0.5] (float)");
                         }
                     }
                     else if(!strcmp(param, "HEADSET_LFO_SPIN")) {
@@ -558,7 +558,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [0-10] (float)");
+                            SNDERR("HEADSET_LFO_SPIN value out of range. Accepted values are: [0-10] (float)");
                         }
                     }
                     else if(!strcmp(param, "HEADSET_DECAY")) {
@@ -569,7 +569,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [0.1-30] (float)");
+                            SNDERR("HEADSET_DECAY value out of range. Accepted values are: [0.1-30] (float)");
                         }
                     }
                     else if(!strcmp(param, "HEADSET_DELAY")) {
@@ -580,7 +580,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [-500 - 500]");
+                            SNDERR("HEADSET_DELAY value out of range. Accepted values are: [-500 - 500]");
                         }
                     }
                     else if(!strcmp(param, "HEADSET_LPF_INPUT")) {
@@ -591,7 +591,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [200-18000]");
+                            SNDERR("HEADSET_LPF_INPUT value out of range. Accepted values are: [200-18000]");
                         }
                     }
                     else if(!strcmp(param, "HEADSET_LPF_BASS")) {
@@ -602,7 +602,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [50-1050]");
+                            SNDERR("HEADSET_LPF_BASS value out of range. Accepted values are: [50-1050]");
                         }
                     }
                     else if(!strcmp(param, "HEADSET_LPF_DAMP")) {
@@ -613,7 +613,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [200-18000]");
+                            SNDERR("HEADSET_LPF_DAMP value out of range. Accepted values are: [200-18000]");
                         }
                     }
                     else if(!strcmp(param, "HEADSET_LPF_OUTPUT")) {
@@ -624,7 +624,7 @@ void *ctl_thread_loop(void *self)
                             jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
                             jdsp->pCtlQidx++;
                         } else {
-                            SNDERR("Value out of range. Accepted values are: [200-18000]");
+                            SNDERR("HEADSET_LPF_OUTPUT value out of range. Accepted values are: [200-18000]");
                         }
                     }
                 memset(ctl_buf, 0, CTL_BUFFSIZE);
@@ -766,7 +766,7 @@ static void jdspfx_set_property(snd_pcm_jdspfx_t *self) {
                         strcpy(self->tone_eq, self->pCtl[i].str);
                         command_set_eq (self->effectDspMain, self->tone_eq);
                     }else{
-                        printf("[E] EQ string too long (>64 bytes)");
+                        printf("[E] EQ string too long (>100 bytes)");
                     }
                 }
                     break;
@@ -1030,34 +1030,29 @@ static snd_pcm_sframes_t jdsp_transfer(snd_pcm_extplug_t *ext,
     dst = (float*)(dst_areas->addr + (dst_areas->first + dst_areas->step * dst_offset)/8);
 
     if (jdsp->fx_enabled) {
-        audio_buffer_t *in = (audio_buffer_t *) malloc(sizeof(audio_buffer_t));
-        audio_buffer_t *out = (audio_buffer_t *) malloc(sizeof(audio_buffer_t));
-
         switch(jdsp->format){
             case s16le:
-                in->frameCount = size;
-                in->s16 = (int16_t *)(src);
-                out->frameCount = size;
-                out->s16 = (int16_t *)(dst);
-                jdsp->effectDspMain->process(in, out);
+                jdsp->in->frameCount = size;
+                jdsp->in->s16 = (int16_t *)(src);
+                jdsp->out->frameCount = size;
+                jdsp->out->s16 = (int16_t *)(dst);
+                jdsp->effectDspMain->process(jdsp->in, jdsp->out);
                 break;
             case s32le:
-                in->frameCount = size;
-                in->s32 = (int32_t *)(src);
-                out->frameCount = size;
-                out->s32 = (int32_t *)(dst);
-                jdsp->effectDspMain->process(in, out);
+                jdsp->in->frameCount = size;
+                jdsp->in->s32 = (int32_t *)(src);
+                jdsp->out->frameCount = size;
+                jdsp->out->s32 = (int32_t *)(dst);
+                jdsp->effectDspMain->process(jdsp->in, jdsp->out);
                 break;
             case f32le:
-                in->frameCount = size;
-                in->f32 = (float *)(src);
-                out->frameCount = size;
-                out->f32 = (float*)(dst);
-                jdsp->effectDspMain->process(in, out);
+                jdsp->in->frameCount = size;
+                jdsp->in->f32 = (float *)(src);
+                jdsp->out->frameCount = size;
+                jdsp->out->f32 = (float*)(dst);
+                jdsp->effectDspMain->process(jdsp->in, jdsp->out);
                 break;
         }
-        free(in);
-        free(out);
     } else {
         memcpy(dst, src, snd_pcm_frames_to_bytes(ext->pcm, size));
     }
@@ -1080,6 +1075,8 @@ static int jdsp_close(snd_pcm_extplug_t *ext) {
         pthread_join(jdsp->ctl_thread, NULL);
     }
     free(jdsp->pCtl);
+    free(jdsp->in);
+    free(jdsp->out);
 
     jdsp_cfg_write(jdsp);
 
@@ -1154,6 +1151,7 @@ static int jdsp_init(snd_pcm_extplug_t *ext)
     jdsp->tone_filtertype = 0;
     jdsp->tone_enabled = FALSE;
     memset(jdsp->tone_eq, 0, sizeof(jdsp->tone_eq));
+    strncpy(jdsp->tone_eq, "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0", 30);
     jdsp->lim_threshold = 0;
     jdsp->lim_release = 60;
     jdsp->ddc_enabled = FALSE;
@@ -1178,6 +1176,8 @@ static int jdsp_init(snd_pcm_extplug_t *ext)
     /* initialize private resources */
     jdsp->effectDspMain = NULL;
     jdsp->effectDspMain = new EffectDSPMain();
+    jdsp->in = (audio_buffer_t *) malloc(sizeof(audio_buffer_t));
+    jdsp->out = (audio_buffer_t *) malloc(sizeof(audio_buffer_t));
 
     jdsp->samplerate = ext->rate;
     if(ext->format == SND_PCM_FORMAT_S16_LE)

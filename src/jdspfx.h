@@ -189,9 +189,11 @@ typedef struct snd_pcm_jdspfx {
     char convolver_bench_c1[128];
     char convolver_file[4096];
 
+    audio_buffer_t *in;
+    audio_buffer_t *out;
+
     /* < private > */
     EffectDSPMain *effectDspMain;
-    void *so_handle;
 } snd_pcm_jdspfx_t;
 
 #define LINEBUF 256
@@ -280,7 +282,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                     if(v == 0 || v == 1) {
                         self->fx_enabled = v;
                     } else {
-                        printf("Value out of range. Accepted values are: [0|1]");
+                        printf("FX_ENABLE value out of range. Accepted values are: [0|1]\n");
                     }
                 }
                 else if(!strcmp(param, "TUBE_ENABLE")) {
@@ -288,7 +290,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                     if(v == 0 || v == 1) {
                         self->tube_enabled = v;
                     } else {
-                        printf("Value out of range. Accepted values are: [0|1]");
+                        printf("TUBE_ENABLE value out of range. Accepted values are: [0|1]\n");
                     }
                 }
                 else if(!strcmp(param, "TUBE_DRIVE")) {
@@ -296,7 +298,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                        if(v >= 0 && v <= 12000) {
                         self->tube_drive = v;
                     } else {
-                        printf("Value out of range. Accepted values are: [0-12000]");
+                        printf("TUBE_DRIVE value out of range. Accepted values are: [0-12000]\n");
                     }
                 }
                 else if(!strcmp(param, "BASS_ENABLE")) {
@@ -304,7 +306,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                     if(v == 0 || v == 1) {
                         self->bass_enabled = v;
                     } else {
-                        printf("Value out of range. Accepted values are: [0|1]");
+                        printf("BASS_ENABLE value out of range. Accepted values are: [0|1]\n");
                     }
                 }
                 else if(!strcmp(param, "BASS_MODE")) {
@@ -312,7 +314,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                        if(v >= 0 && v <= 3000) {
                         self->bass_mode = v;
                     } else {
-                        printf("Value out of range. Accepted values are: [0-3000]");
+                        printf("BASS_MODE value out of range. Accepted values are: [0-3000]\n");
                     }
                 }
                 else if(!strcmp(param, "BASS_FILTERTYPE")) {
@@ -320,7 +322,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                       if(v >= 0 || v <= 1) {
                         self->bass_filtertype = v;
                        } else {
-                            printf("Value out of range. Accepted values are: [0|1]");
+                            printf("BASS_FILTERTYPE value out of range. Accepted values are: [0|1]\n");
                        }
                 }
                 else if(!strcmp(param, "BASS_FREQ")) {
@@ -328,7 +330,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                      if(v >= 30 && v <= 300) {
                         self->bass_freq = v;
                     } else {
-                          printf("Value out of range. Accepted values are: [30-300]");
+                          printf("BASS_FREQ value out of range. Accepted values are: [30-300]\n");
                     }
                 }
                 else if(!strcmp(param, "STEREOWIDE_ENABLE")) {
@@ -336,7 +338,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                     if(v == 0 || v == 1) {
                         self->stereowide_enabled = v;
                     } else {
-                        printf("Value out of range. Accepted values are: [0|1]");
+                        printf("STEREOWIDE_ENABLE value out of range. Accepted values are: [0|1]\n");
                     }
                 }
                 else if(!strcmp(param, "STEREOWIDE_MCOEFF")) {
@@ -344,7 +346,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                     if(v >= 0 && v <= 10000) {
                         self->stereowide_mcoeff = v;
                     } else {
-                        printf("STEREOWIDE_MCOEFF value out of range. Accepted values are: [0-10000]");
+                        printf("STEREOWIDE_MCOEFF value out of range. Accepted values are: [0-10000]\n");
                     }
                 }
                 else if(!strcmp(param, "STEREOWIDE_SCOEFF")) {
@@ -352,7 +354,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                     if(v >= 0 && v <= 10000) {
                         self->stereowide_scoeff = v;
                     } else {
-                        printf("STEREOWIDE_SCOEFF value out of range. Accepted values are: [0-10000]");
+                        printf("STEREOWIDE_SCOEFF value out of range. Accepted values are: [0-10000]\n");
                     }
                 }
                 else if(!strcmp(param, "BS2B_ENABLE")) {
@@ -360,7 +362,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                     if(v == 0 || v == 1) {
                         self->bs2b_enabled = v;
                     } else {
-                        printf("BS2B_ENABLE value out of range. Accepted values are: [0|1]");
+                        printf("BS2B_ENABLE value out of range. Accepted values are: [0|1]\n");
                     }
                 }
                 else if(!strcmp(param, "BS2B_FCUT")) {
@@ -368,7 +370,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                     if(v >= 300 && v <= 2000) {
                         self->bs2b_fcut = v;
                     } else {
-                        printf("BS2B_FCUT value out of range. Accepted values are: [300-2000]");
+                        printf("BS2B_FCUT value out of range. Accepted values are: [300-2000]\n");
                     }
                 }
                 else if(!strcmp(param, "BS2B_FEED")) {
@@ -376,7 +378,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                     if(v >= 10 && v <= 150) {
                         self->bs2b_feed = v;
                     } else {
-                        printf("BS2B_FEED value out of range. Accepted values are: [10-150]");
+                        printf("BS2B_FEED value out of range. Accepted values are: [10-150]\n");
                     }
                 }
                 else if(!strcmp(param, "COMPRESSOR_ENABLE")) {
@@ -384,7 +386,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                    if(v == 0 || v == 1) {
                         self->compression_enabled = v;
                     } else {
-                        printf("Value out of range. Accepted values are: [0|1]");
+                        printf("COMPRESSOR_ENABLE value out of range. Accepted values are: [0|1]\n");
                     }
                 }
                 else if(!strcmp(param, "COMPRESSOR_PREGAIN")) {
@@ -392,7 +394,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                    if(v >= 0 && v <= 24) {
                         self->compression_pregain = v;
                     } else {
-                        printf("Value out of range. Accepted values are: [0-24]");
+                        printf("COMPRESSOR_PREGAIN value out of range. Accepted values are: [0-24]\n");
                     }
                 }
                 else if(!strcmp(param, "COMPRESSOR_THRESHOLD")) {
@@ -400,7 +402,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                    if(v >= -80 && v <= 0) {
                         self->compression_threshold = v;
                     } else {
-                        printf("Value out of range. Accepted values are: [-80 - 0]");
+                        printf("COMPRESSOR_THRESHOLD value out of range. Accepted values are: [-80 - 0]\n");
                     }
                 }
                 else if(!strcmp(param, "COMPRESSOR_KNEE")) {
@@ -408,7 +410,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                    if(v >= 0 && v <= 40) {
                         self->compression_knee = v;
                     } else {
-                        printf("Value out of range. Accepted values are: [0-40]");
+                        printf("COMPRESSOR_KNEE value out of range. Accepted values are: [0-40]\n");
                     }
                 }
                 else if(!strcmp(param, "COMPRESSOR_RATIO")) {
@@ -416,7 +418,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                    if(v >= -20 && v <= 20) {
                         self->compression_ratio = v;
                     } else {
-                        printf("Value out of range. Accepted values are: [-20 - 20]");
+                        printf("COMPRESSOR_RATIO value out of range. Accepted values are: [-20 - 20]\n");
                     }
                 }
                 else if(!strcmp(param, "COMPRESSOR_ATTACK")) {
@@ -424,7 +426,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                    if(v >= 1 && v <= 1000) {
                         self->compression_attack = v;
                     } else {
-                        printf("Value out of range. Accepted values are: [1-1000]");
+                        printf("COMPRESSOR_ATTACK value out of range. Accepted values are: [1-1000]\n");
                     }
                 }
                 else if(!strcmp(param, "COMPRESSOR_RELEASE")) {
@@ -432,7 +434,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                    if(v >= 1 && v <= 1000) {
                         self->compression_release = v;
                     } else {
-                        printf("Value out of range. Accepted values are: [1-1000]");
+                        printf("COMPRESSOR_RELEASE value out of range. Accepted values are: [1-1000]\n");
                     }
                 }
                 else if(!strcmp(param, "TONE_ENABLE")) {
@@ -440,7 +442,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                     if(v == 0 || v == 1) {
                         self->tone_enabled = v;
                      } else {
-                         printf("Value out of range. Accepted values are: [0|1]");
+                         printf("TONE_ENABLE value out of range. Accepted values are: [0|1]\n");
                      }
                  }
                  else if(!strcmp(param, "TONE_FILTERTYPE")) {
@@ -448,7 +450,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                     if(v >= 0 && v <= 1) {
                         self->tone_filtertype = v;
                      } else {
-                         printf("Value out of range. Accepted values are: [0-1]");
+                         printf("TONE_FILTERTYPE value out of range. Accepted values are: [0-1]\n");
                      }
                  }
                  else if(!strcmp(param, "TONE_EQ")) {
@@ -456,7 +458,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                          memset(self->tone_eq, 0, sizeof(self->tone_eq));
                          strncpy(self->tone_eq, val, strlen(val)-1);
                      } else {
-                         printf("Value out of range. Accepted values are: [0;0;0;0;0;0;0;0;0;0;0;0;0;0;0]");
+                         printf("TONE_EQ value out of range. Accepted values are: [0;0;0;0;0;0;0;0;0;0;0;0;0;0;0]\n");
                      }
                  }
                  else if(!strcmp(param, "MASTER_LIMTHRESHOLD")) {
@@ -464,7 +466,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                     if(v >= -60 && v <= 0) {
                         self->lim_threshold = v;
                      } else {
-                         printf("Value out of range. Accepted values are: [-60-0] (float)");
+                         printf("MASTER_LIMTHRESHOLD value out of range. Accepted values are: [-60-0] (float)\n");
                      }
                  }
                  else if(!strcmp(param, "MASTER_LIMRELEASE")) {
@@ -472,7 +474,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                     if(v >= 1.5 && v <= 2000) {
                         self->lim_release = v;
                      } else {
-                         printf("Value out of range. Accepted values are: [1.5-2000] (float)");
+                         printf("MASTER_LIMRELEASE value out of range. Accepted values are: [1.5-2000] (float)\n");
                      }
                  }
                  else if(!strcmp(param, "DDC_ENABLE")) {
@@ -480,7 +482,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                     if(v == 0 || v == 1) {
                         self->ddc_enabled = v;
                      } else {
-                         printf("Value out of range. Accepted values are: [0|1]");
+                         printf("DDC_ENABLE vlue out of range. Accepted values are: [0|1]\n");
                      }
                  }
                  else if(!strcmp(param, "DDC_COEFFS")) {
@@ -488,7 +490,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                          memset(self->ddc_coeffs, 0, sizeof(self->ddc_coeffs));
                          strncpy(self->ddc_coeffs, val, strlen(val)-1);
                      } else {
-                         printf("Value out of range. Accepted values are: [/path/file.vdc]");
+                         printf("DDC_COEFFS value out of range. Accepted values are: [/path/file.vdc]\n");
                      }
                  }
                  else if(!strcmp(param, "CONVOLVER_ENABLE")) {
@@ -496,7 +498,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                     if(v == 0 || v == 1) {
                         self->convolver_enabled = v;
                      } else {
-                         printf("Value out of range. Accepted values are: [0|1]");
+                         printf("CONVOLVER_ENABLE value out of range. Accepted values are: [0|1]\n");
                      }
                  }
                  else if(!strcmp(param, "CONVOLVER_FILE")) {
@@ -504,7 +506,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                          memset(self->convolver_file, 0, sizeof(self->convolver_file));
                          strncpy(self->convolver_file, val, strlen(val)-1);
                      } else {
-                         printf("Value out of range. Accepted values are: [/path/file.irs]");
+                         printf("CONVOLVER_FILE value out of range. Accepted values are: [/path/file.irs]\n");
                      }
                  }
                  else if(!strcmp(param, "CONVOLVER_GAIN")) {
@@ -512,7 +514,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                     if(v >= -80 && v <= 30) {
                         self->convolver_gain = v;
                      } else {
-                         printf("Value out of range. Accepted values are: [-80 - 30] (float)");
+                         printf("CONVOLVER_GAIN value out of range. Accepted values are: [-80 - 30] (float)\n");
                      }
                  }
                  else if(!strcmp(param, "CONVOLVER_BENCH_C0")) {
@@ -520,7 +522,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                          memset(self->convolver_bench_c0, 0, sizeof(self->convolver_bench_c0));
                          strncpy(self->convolver_bench_c0, val, strlen(val)-1);
                      } else {
-                         printf("Value out of range. Accepted values are: [0.000000]");
+                         printf("CONVOLVER_BENCH_C0 value out of range. Accepted values are: [0.000000]\n");
                      }
                  }
                  else if(!strcmp(param, "CONVOLVER_BENCH_C1")) {
@@ -528,7 +530,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                          memset(self->convolver_bench_c1, 0, sizeof(self->convolver_bench_c1));
                          strncpy(self->convolver_bench_c1, val, strlen(val)-1);
                      } else {
-                         printf("Value out of range. Accepted values are: [0.000000]");
+                         printf("CONVOLVER_BENCH_C1 value out of range. Accepted values are: [0.000000]\n");
                      }
                  }
                  else if(!strcmp(param, "HEADSET_ENABLE")) {
@@ -536,7 +538,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                     if(v == 0 || v == 1) {
                         self->headset_enabled = v;
                      } else {
-                         printf("Value out of range. Accepted values are: [0|1]");
+                         printf("HEADSET_ENABLE value out of range. Accepted values are: [0|1]\n");
                      }
                  }
                  else if(!strcmp(param, "HEADSET_OSF")) {
@@ -544,7 +546,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                     if(v >= 0 && v <= 4) {
                         self->headset_osf = v;
                      } else {
-                         printf("Value out of range. Accepted values are: [0-4]");
+                         printf("HEADSET_OSF value out of range. Accepted values are: [0-4]\n");
                      }
                  }
                  else if(!strcmp(param, "HEADSET_REFLECTION_AMOUNT")) {
@@ -552,7 +554,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                     if(v >= 0 && v <= 1) {
                         self->headset_reflection_amount = v;
                      } else {
-                         printf("Value out of range. Accepted values are: [0.0-1.0] (float)");
+                         printf("HEADSET_REFLECTION_AMOUNT value out of range. Accepted values are: [0.0-1.0] (float)\n");
                      }
                  }
                  else if(!strcmp(param, "HEADSET_FINALWET")) {
@@ -560,7 +562,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                     if(v >= -70 && v <= 10) {
                         self->headset_finalwet = v;
                      } else {
-                         printf("Value out of range. Accepted values are: [-70 - 10] (float)");
+                         printf("HEADSET_FINALWET value out of range. Accepted values are: [-70 - 10] (float)\n");
                      }
                  }
                  else if(!strcmp(param, "HEADSET_FINALDRY")) {
@@ -568,7 +570,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                     if(v >= -70 && v <= 10) {
                         self->headset_finaldry = v;
                      } else {
-                         printf("Value out of range. Accepted values are: [-70 - 10] (float)");
+                         printf("HEADSET_FINALDRY value out of range. Accepted values are: [-70 - 10] (float)\n");
                      }
                  }
                  else if(!strcmp(param, "HEADSET_REFLECTION_FACTOR")) {
@@ -576,7 +578,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                     if(v >= 0.5 && v <= 2.5) {
                         self->headset_reflection_factor = v;
                      } else {
-                         printf("Value out of range. Accepted values are: [0.5-2.5] (float)");
+                         printf("HEADSET_REFLECTION_FACTOR value out of range. Accepted values are: [0.5-2.5] (float)\n");
                      }
                  }
                  else if(!strcmp(param, "HEADSET_REFLECTION_WIDTH")) {
@@ -584,7 +586,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                     if(v >= -1 && v <= 1) {
                         self->headset_reflection_width = v;
                      } else {
-                         printf("Value out of range. Accepted values are: [-1 - 1] (float)");
+                         printf("HEADSET_REFLECTION_WIDTH value out of range. Accepted values are: [-1 - 1] (float)\n");
                      }
                  }
                  else if(!strcmp(param, "HEADSET_WIDTH")) {
@@ -592,7 +594,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                     if(v >= 0 && v <= 1) {
                         self->headset_width = v;
                      } else {
-                         printf("Value out of range. Accepted values are: [0-1] (float)");
+                         printf("HEADSET_WIDTH value out of range. Accepted values are: [0-1] (float)\n");
                      }
                  }
                  else if(!strcmp(param, "HEADSET_WET")) {
@@ -600,7 +602,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                     if(v >= -70 && v <= 10) {
                         self->headset_wet = v;
                      } else {
-                         printf("Value out of range. Accepted values are: [-70 - 10] (float)");
+                         printf("HEADSET_WET value out of range. Accepted values are: [-70 - 10] (float)\n");
                      }
                  }
                  else if(!strcmp(param, "HEADSET_LFO_WANDER")) {
@@ -608,7 +610,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                     if(v >= 0.1 && v <= 0.6) {
                         self->headset_lfo_wander = v;
                      } else {
-                         printf("Value out of range. Accepted values are: [0.1 - 0.6] (float)");
+                         printf("HEADSET_LFO_WANDER value out of range. Accepted values are: [0.1 - 0.6] (float)\n");
                      }
                  }
                  else if(!strcmp(param, "HEADSET_BASSBOOST")) {
@@ -616,7 +618,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                     if(v >= 0 && v <= 0.5) {
                         self->headset_bassboost = v;
                      } else {
-                         printf("Value out of range. Accepted values are: [0-0.5] (float)");
+                         printf("HEADSET_BASSBOOST value out of range. Accepted values are: [0-0.5] (float)\n");
                      }
                  }
                  else if(!strcmp(param, "HEADSET_LFO_SPIN")) {
@@ -624,7 +626,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                     if(v >= 0 && v <= 10) {
                         self->headset_lfo_spin = v;
                      } else {
-                         printf("Value out of range. Accepted values are: [0-10] (float)");
+                         printf("HEADSET_LFO_SPIN value out of range. Accepted values are: [0-10] (float)\n");
                      }
                  }
                  else if(!strcmp(param, "HEADSET_DECAY")) {
@@ -632,7 +634,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                     if(v >= 0.1 && v <= 30) {
                         self->headset_decay = v;
                      } else {
-                         printf("Value out of range. Accepted values are: [0.1-30] (float)");
+                         printf("HEADSET_DECAY value out of range. Accepted values are: [0.1-30] (float)\n");
                      }
                  }
                  else if(!strcmp(param, "HEADSET_DELAY")) {
@@ -640,7 +642,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                     if(v >= -500 && v <= 500) {
                         self->headset_delay = v;
                      } else {
-                         printf("Value out of range. Accepted values are: [-500 - 500]");
+                         printf("HEADSET_DELAY value out of range. Accepted values are: [-500 - 500]\n");
                      }
                  }
                  else if(!strcmp(param, "HEADSET_LPF_INPUT")) {
@@ -648,7 +650,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                     if(v >= 200 && v <= 18000) {
                         self->headset_inputlpf = v;
                      } else {
-                         printf("Value out of range. Accepted values are: [200-18000]");
+                         printf("HEADSET_LPF_INPUT value out of range. Accepted values are: [200-18000]\n");
                      }
                  }
                  else if(!strcmp(param, "HEADSET_LPF_BASS")) {
@@ -656,7 +658,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                     if(v >= 50 && v <= 1050) {
                         self->headset_basslpf = v;
                      } else {
-                         printf("Value out of range. Accepted values are: [50-1050]");
+                         printf("HEADSET_LPF_BASS value out of range. Accepted values are: [50-1050]\n");
                      }
                  }
                  else if(!strcmp(param, "HEADSET_LPF_DAMP")) {
@@ -664,7 +666,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                     if(v >=200 && v <= 18000) {
                         self->headset_damplpf = v;
                      } else {
-                         printf("Value out of range. Accepted values are: [200-18000]");
+                         printf("HEADSET_LPF_DAMP value out of range. Accepted values are: [200-18000]\n");
                      }
                  }
                  else if(!strcmp(param, "HEADSET_LPF_OUTPUT")) {
@@ -672,7 +674,7 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                     if(v >=200 && v <= 18000) {
                         self->headset_outputlpf = v;
                      } else {
-                         printf("Value out of range. Accepted values are: [200-18000]");
+                         printf("HEADSET_LPF_OUTPUT value out of range. Accepted values are: [200-18000]\n");
                      }
                  }
                 lines++;
