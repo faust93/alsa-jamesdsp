@@ -6,6 +6,10 @@ This plugin based on [gst-plugin-jamesdsp](https://github.com/Audio4Linux/gst-pl
 
 ### Features
 
+Supported channels:
+
+* 2
+
 Supported bit depth:
 
 | # bits    | Status      |
@@ -139,6 +143,8 @@ echo -n "CONVOLVER_FILE=/tmp/boom.irs"  > /tmp/.jdspfx.ctl
 echo -n "CONVOLVER_ENABLE=1" > /tmp/.jdspfx.ctl
 echo -n "COMMIT" > /tmp/.jdspfx.ctl
 ~~~
+
+There's a simple app as well used to control DSP properties using web browser [alsa-jamesdsp-gui](https://github.com/faust93/alsa-jamesdsp-gui)
 
 ##### Properties description
 
