@@ -1064,26 +1064,23 @@ static int jdsp_close(snd_pcm_extplug_t *ext) {
 #ifdef DEBUG
     printf("%s\n", __func__);
 #endif
-    if(!jdsp->init_done) {
-        free(jdsp);
-        return 0;
-    }
-    jdsp->init_done = false;
     if(jdsp->ctl_thread_running) {
         jdsp->ctl_thread_running = false;
         pthread_cancel(jdsp->ctl_thread);
         pthread_join(jdsp->ctl_thread, NULL);
     }
-    free(jdsp->pCtl);
-    free(jdsp->in);
-    free(jdsp->out);
+    if(jdsp->init_done) {
+        free(jdsp->pCtl);
+        free(jdsp->in);
+        free(jdsp->out);
 
-    jdsp_cfg_write(jdsp);
+        jdsp_cfg_write(jdsp);
 
-    EffectDSPMain *intf = jdsp->effectDspMain;
-    intf->command(EFFECT_CMD_RESET, 0, NULL, NULL, NULL);
-    if (jdsp->effectDspMain != NULL) {
-        delete jdsp->effectDspMain;
+        EffectDSPMain *intf = jdsp->effectDspMain;
+        intf->command(EFFECT_CMD_RESET, 0, NULL, NULL, NULL);
+        if (jdsp->effectDspMain != NULL) {
+            delete jdsp->effectDspMain;
+        }
     }
     free(jdsp);
     return 0;
@@ -1191,10 +1188,6 @@ static int jdsp_init(snd_pcm_extplug_t *ext)
 
     if(jdsp->format == other)
         SNDERR("SAMPLE FORMAT %d NOT SUPPORTED, attempting to continue anyway...\n", jdsp->format);
-
-    command_set_buffercfg(jdsp->effectDspMain,jdsp->samplerate,jdsp->format);
-    command_set_convolver(jdsp->effectDspMain, jdsp->convolver_file,jdsp->convolver_gain,jdsp->convolver_quality,
-                          jdsp->convolver_bench_c0,jdsp->convolver_bench_c1,jdsp->samplerate);
 
     if (jdsp->effectDspMain != NULL)
         sync_all_parameters(jdsp);
