@@ -647,6 +647,7 @@ ct_terminate:
 static void jdspfx_set_property(snd_pcm_jdspfx_t *self) {
     for(int i = 0; i < CMD_QUEUE_LEN; i++) {
         if(self->pCtl[i].pUpdate) {
+            self->pCtl[i].pUpdate = false;
             switch (self->pCtl[i].param) {
                 case PROP_FX_ENABLE: {
                     self->fx_enabled = self->pCtl[i].i8;
@@ -922,7 +923,7 @@ static void jdspfx_set_property(snd_pcm_jdspfx_t *self) {
 /* sync all parameters to fx core */
 static void sync_all_parameters(snd_pcm_jdspfx_t *self) {
 
-    //self->fx_enabled = TRUE;
+    command_set_buffercfg(self->effectDspMain,self->samplerate,self->format);
 
     config_set_px0_vx0x0(self->effectDspMain, EFFECT_CMD_ENABLE);
 
