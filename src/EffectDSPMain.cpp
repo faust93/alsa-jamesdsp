@@ -35,7 +35,7 @@ EffectDSPMain::EffectDSPMain()
 	tempBuf[0] = (double*)malloc(memSize);
 	tempBuf[1] = (double*)malloc(memSize);
 
-	r = (reverbdata_t*)malloc(sizeof *r);
+	r = NULL;
 #ifdef DEBUG
 	printf("[I] %d space allocated\n", DSPbufferLength);
 #endif
@@ -67,6 +67,8 @@ EffectDSPMain::~EffectDSPMain()
 		free(tempImpulseIncoming);
 	if (tempImpulsedouble)
 		free(tempImpulsedouble);
+	if (finalIR)
+		free(finalIR);
 	if (benchmarkValue[0])
 		free(benchmarkValue[0]);
 	if (benchmarkValue[1])
@@ -644,6 +646,8 @@ int32_t EffectDSPMain::command(uint32_t cmdCode, uint32_t cmdSize, void* pCmdDat
 					free(finalImpulse);
 					finalImpulse = 0;
 				}
+				if(tempImpulsedouble)
+					free(tempImpulsedouble);
 				if (!finalImpulse)
 				{
 					tempbufValue = impulseLengthActual * impChannels;
@@ -763,8 +767,9 @@ int32_t EffectDSPMain::command(uint32_t cmdCode, uint32_t cmdSize, void* pCmdDat
                 {
 					bs2bEnabled = 0;
                     BS2BInit(&bs2b, (unsigned int)mSamplingRate, res);
+#ifdef DEBUG
                     printf("[I] BS2B - Crossfeeding level: %d (%fdB), Cutoff frequency: %dHz\n",bs2bfeed,bs2bfeed/10.0f,bs2bfcut);
-
+#endif
                     /*if (value == 0)
                        BS2BInit(&bs2b, (unsigned int)mSamplingRate, BS2B_JMEIER_CLEVEL);
                    else if (value == 1)
@@ -878,6 +883,10 @@ int32_t EffectDSPMain::command(uint32_t cmdCode, uint32_t cmdSize, void* pCmdDat
 #ifdef DEBUG
 				printf("[I] Allocate %d stringLength\n", stringLength);
 #endif
+				if(stringEq) {
+					free(stringEq);
+					stringEq = NULL;
+				}
 				stringEq = (char*)calloc(stringLength, sizeof(char));
                 if(replyData!=NULL)*replyData = 0;
 				return 0;
@@ -895,6 +904,10 @@ int32_t EffectDSPMain::command(uint32_t cmdCode, uint32_t cmdSize, void* pCmdDat
 				if (convGaindB > 50.0)
 					convGaindB = 50.0;
 				int numTime2Send = ((int32_t *)cep)[7];
+				if(tempImpulseIncoming) {
+					free(tempImpulseIncoming);
+					tempImpulseIncoming = NULL;
+				}
 				tempImpulseIncoming = (float*)calloc(4096 * impChannels * numTime2Send, sizeof(float));
                 if(replyData!=NULL)*replyData = 0;
 				return 0;
@@ -1016,6 +1029,8 @@ int EffectDSPMain::refreshConvolver(uint32_t DSPbufferLength)
 		}
 		else if (impChannels == 4)
 		{
+			if(fullStereoConvolver)
+				free(fullStereoConvolver);
 			fullStereoConvolver = (AutoConvolver1x1**)malloc(sizeof(AutoConvolver1x1*) * 4);
 			if (!fullStereoConvolver)
 				return 0;
@@ -1120,7 +1135,7 @@ void EffectDSPMain::refreshReverb()
 {
 	sf_advancereverb(&myreverb,mSamplingRate,r->oversamplefactor,r->ertolate,r->erefwet
 	        ,r->dry,r->ereffactor,r->erefwidth,r->width,r->wet,r->wander,r->bassb,
-	        r->spin,r->inputlpf,r->basslpf,r->damplpf,r->outputlpf,r->rt60,r->delay);
+    	    r->spin,r->inputlpf,r->basslpf,r->damplpf,r->outputlpf,r->rt60,r->delay);
 	//sf_presetreverb(&myreverb, mSamplingRate, (sf_reverb_preset)mPreset);
 }
 void *EffectDSPMain::threadingConvF(void *args)
@@ -1597,6 +1612,7 @@ void EffectDSPMain::_loadDDC(char* ddc_str){
 	printf("VDC df48[0].b0: %1.14f\n", (float)df48[0]->b0);
 #endif
     free(stringEq);
+	free(ddc_str);
     stringEq = 0;
     return;
 }
@@ -1619,11 +1635,6 @@ void EffectDSPMain::_loadConv(int impulseCutted,int channels,float convGaindB,fl
     int i, j, tempbufValue;
     tempbufValue = impulseLengthActual * impChannels;
 
-    double *finalIR = (double*)malloc(tempbufValue * sizeof(double));
-    for(int i=0;i<tempbufValue;i++){
-        finalIR[i] = (double)ir[i];
-    }
-
     if (finalImpulse)
     {
         for (i = 0; i < previousimpChannels; i++)
@@ -1631,6 +1642,16 @@ void EffectDSPMain::_loadConv(int impulseCutted,int channels,float convGaindB,fl
         free(finalImpulse);
         finalImpulse = 0;
     }
+
+	if(finalIR) {
+		free(finalIR);
+		finalIR = NULL;
+	}
+    finalIR = (double*)malloc(tempbufValue * sizeof(double));
+    for(int i=0;i<tempbufValue;i++){
+        finalIR[i] = (double)ir[i];
+    }
+
     if (!finalImpulse)
     {
 

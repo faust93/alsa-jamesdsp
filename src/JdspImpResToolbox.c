@@ -45,7 +45,6 @@ float* ReadImpulseResponseToFloat
 {
     // Allocate memory block for reading
     float* outbuf;
-    //int i;
     float *final;
     int frameCountTotal = sfiIRInfo.channels * sfiIRInfo.frames;
     size_t bufferSize = frameCountTotal * sizeof(float);

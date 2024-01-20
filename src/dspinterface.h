@@ -205,8 +205,9 @@ void command_set_convolver(EffectDSPMain *intf,char* path,float gain,int quality
     int frameCountTotal = impinfo[0]*impinfo[1];
     int impulseCutted = (int)(frameCountTotal * (quality/100));
 
+#ifdef DEBUG
     printf("---- Format: %d, Frames: %d, ImpulseCutted: %d, Channels: %d, Gain: %f, Quality %d\n",impinfo[3],impinfo[1],impulseCutted,impinfo[0],gain,quality);
-
+#endif
     intf->_loadConv(impulseCutted,impinfo[0],gain,impulseResponse);
     free(c0);
     free(c1);

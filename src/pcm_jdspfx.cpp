@@ -640,7 +640,7 @@ ct_terminate:
 #ifdef DEBUG
     printf("%s\n exit", __func__);
 #endif
-    pthread_detach(jdsp->ctl_thread);
+    pthread_exit(0);
     return NULL;
 }
 
@@ -1091,7 +1091,7 @@ static int jdsp_init(snd_pcm_extplug_t *ext)
 {
     snd_pcm_jdspfx_t *jdsp = (snd_pcm_jdspfx_t *)ext;
 
-    if(jdsp->fx_enabled || jdsp->init_done) {
+    if(jdsp->init_done) {
         if(jdsp->samplerate != ext->rate) {
                 if(ext->format == SND_PCM_FORMAT_S16_LE)
                     jdsp->format = s16le;

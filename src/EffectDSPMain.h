@@ -65,7 +65,7 @@ protected:
 	int DSPbufferLength, inOutRWPosition;
 	size_t memSize;
 	// double buffer
-	double *inputBuffer[2], *outputBuffer[2], *tempBuf[2], **finalImpulse, *tempImpulsedouble;
+	double *inputBuffer[2], *outputBuffer[2], *tempBuf[2], **finalImpulse, *tempImpulsedouble, *finalIR;
 	float *tempImpulseIncoming;
 	// Fade ramp
 	double ramp;
