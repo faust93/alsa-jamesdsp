@@ -186,12 +186,16 @@ void command_set_convolver(EffectDSPMain *intf,char* path,float gain,int quality
     }
     if (p == 0) {
         printf("[E] Convolver path char array contains zero data\n");
+        free(c0);
+        free(c1);
         return;
     }
 
     int* impinfo = GetLoadImpulseResponseInfo(path);
     if (impinfo == NULL){
         printf("[E] Convolver: GetLoadImpulseResponseInfo returned NULL\n");
+        free(c0);
+        free(c1);
         return;
     }
     if (impinfo[2] != sr)
@@ -209,6 +213,8 @@ void command_set_convolver(EffectDSPMain *intf,char* path,float gain,int quality
     printf("---- Format: %d, Frames: %d, ImpulseCutted: %d, Channels: %d, Gain: %f, Quality %d\n",impinfo[3],impinfo[1],impulseCutted,impinfo[0],gain,quality);
 #endif
     intf->_loadConv(impulseCutted,impinfo[0],gain,impulseResponse);
+    free(impinfo);
+    free(impulseResponse);
     free(c0);
     free(c1);
 }

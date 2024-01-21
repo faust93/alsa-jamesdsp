@@ -1292,6 +1292,7 @@ SND_PCM_PLUGIN_DEFINE_FUNC(jdspfx)
 
     err = snd_pcm_extplug_create(&jdsp->ext, name, root, sconf, stream, mode);
     if (err < 0) {
+        snd_pcm_extplug_delete(&jdsp->ext);
         free(jdsp);
         return err;
     }
