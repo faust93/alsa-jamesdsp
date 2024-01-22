@@ -77,13 +77,19 @@ float* ReadImpulseResponseToFloat
         float *out = (float*)malloc(bufferSize);
         int error;
         SRC_DATA data;
+        memset (&data, 0, sizeof(SRC_DATA));
         data.data_in = pFrameBuffer;
         data.data_out = out;
         data.input_frames = sfiIRInfo.frames;
         data.output_frames = outFramesPerChannel;
         data.src_ratio = convertionRatio;
-        error = src_simple(&data, 1, sfiIRInfo.channels);
+        error = src_simple(&data, 0, sfiIRInfo.channels);
+        if(error) {
+            printf ("Resampler Error: %s\n", src_strerror(error));
+        }
         final = (float*)malloc(bufferSize);
+        free(outbuf);
+        outbuf = (float*)malloc(bufferSize);
         memcpy(final, out, bufferSize);
 
         memcpy(outbuf, final, bufferSize);
