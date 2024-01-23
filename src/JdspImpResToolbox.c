@@ -74,7 +74,7 @@ float* ReadImpulseResponseToFloat
         int resampledframeCountTotal = (int)((double)frameCountTotal * convertionRatio);
         int outFramesPerChannel = (int)((double)sfiIRInfo.frames * convertionRatio);
         bufferSize = resampledframeCountTotal * sizeof(float);
-        float *out = (float*)malloc(bufferSize);
+        float *out = (float*)malloc(bufferSize + 256);
         int error;
         SRC_DATA data;
         memset (&data, 0, sizeof(SRC_DATA));
