@@ -803,9 +803,10 @@ int32_t EffectDSPMain::command(uint32_t cmdCode, uint32_t cmdSize, void* pCmdDat
 				IIRgain = newgain/10.0f;
                 if (IIRenabled || (IIRfreq != oldFreq || IIRgain != oldGgain))
                 {
+					int8_t iirstate = IIRenabled;
 					IIRenabled = 0;
 					refreshIIR();
-					IIRenabled = 1;
+					IIRenabled = iirstate;
 #ifdef DEBUG
 					printf("[I] IIR - Freq: %d (%fdB), Gain: %f, Qfact: %f, Filter: %d\n",newfreq,IIRfreq,IIRgain,IIRqfact,IIRfilter);
 #endif
@@ -839,9 +840,10 @@ int32_t EffectDSPMain::command(uint32_t cmdCode, uint32_t cmdSize, void* pCmdDat
 				IIRfilter = (double)((float*)cep)[4];
 				IIRqfact = (double)((float*)cep)[5];
 				if (IIRenabled || (oldF != IIRfilter || oldQ != IIRqfact)) {
+					int8_t iirstate = IIRenabled;
 					IIRenabled = 0;
 					refreshIIR();
-					IIRenabled = 1;
+					IIRenabled = iirstate;
 				}
                 if(replyData!=NULL)*replyData = 0;
 				return 0;
