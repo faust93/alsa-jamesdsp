@@ -72,6 +72,12 @@ enum {
     PROP_CONVOLVER_BENCH_C0,
     PROP_CONVOLVER_BENCH_C1,
     PROP_CONVOLVER_FILE,
+    /* IIR */
+    PROP_IIR_ENABLE,
+    PROP_IIR_FILTER,
+    PROP_IIR_FREQ,
+    PROP_IIR_GAIN,
+    PROP_IIR_QFACT
 };
 
 typedef struct jdsp_param_s {
@@ -189,6 +195,13 @@ typedef struct snd_pcm_jdspfx {
     char convolver_bench_c1[128];
     char convolver_file[4096];
 
+    // iir
+    int8_t iir_enabled;
+    int8_t iir_filter;
+    int32_t iir_freq;
+    int32_t iir_gain;
+    float_t iir_qfact;
+
     audio_buffer_t *in;
     audio_buffer_t *out;
 
@@ -254,6 +267,11 @@ int jdsp_cfg_write(snd_pcm_jdspfx_t *self){
     fprintf(fn, "HEADSET_LPF_BASS=%d\n", self->headset_basslpf);
     fprintf(fn, "HEADSET_LPF_DAMP=%d\n", self->headset_damplpf);
     fprintf(fn, "HEADSET_LPF_OUTPUT=%d\n", self->headset_outputlpf);
+    fprintf(fn, "IIR_ENABLE=%d\n", self->iir_enabled);
+    fprintf(fn, "IIR_FILTER=%d\n", self->iir_filter);
+    fprintf(fn, "IIR_FREQ=%d\n", self->iir_freq);
+    fprintf(fn, "IIR_GAIN=%d\n", self->iir_gain);
+    fprintf(fn, "IIR_QFACT=%f\n", self->iir_qfact);
     fclose(fn);
     return 0;
 }
@@ -677,6 +695,46 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                          printf("HEADSET_LPF_OUTPUT value out of range. Accepted values are: [200-18000]\n");
                      }
                  }
+                else if(!strcmp(param, "IIR_ENABLE")) {
+                    int8_t v = atoi(val);
+                    if(v == 0 || v == 1) {
+                        self->iir_enabled = v;
+                    } else {
+                        printf("IIR_ENABLE value out of range. Accepted values are: [0|1]\n");
+                    }
+                }
+                else if(!strcmp(param, "IIR_FILTER")) {
+                    int16_t v = atoi(val);
+                    if(v >= 0 && v <= 11) {
+                        self->iir_filter = v;
+                    } else {
+                        printf("IIR_FILTER value out of range. Accepted values are: [0-11]\n");
+                    }
+                }
+                else if(!strcmp(param, "IIR_FREQ")) {
+                    int16_t v = atoi(val);
+                    if(v >= 0 && v <= 40000) {
+                        self->iir_freq = v;
+                    } else {
+                        printf("IIR_FREQ value out of range. Accepted values are: [0-40000]\n");
+                    }
+                }
+                else if(!strcmp(param, "IIR_GAIN")) {
+                    int16_t v = atoi(val);
+                    if(v >= -100 && v <= 100) {
+                        self->iir_gain = v;
+                    } else {
+                        printf("IIR_GAIN value out of range. Accepted values are: [-100-100]\n");
+                    }
+                }
+                else if(!strcmp(param, "IIR_QFACT")) {
+                    float_t v = atof(val);
+                    if(v >= 0.0 && v <= 4.0) {
+                        self->iir_qfact = v;
+                    } else {
+                        printf("IIR_QFACT value out of range. Accepted values are: [0.0000-4.0000]\n");
+                    }
+                }
                 lines++;
             }
         }

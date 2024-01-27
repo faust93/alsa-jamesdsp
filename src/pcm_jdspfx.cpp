@@ -627,6 +627,62 @@ void *ctl_thread_loop(void *self)
                             SNDERR("HEADSET_LPF_OUTPUT value out of range. Accepted values are: [200-18000]");
                         }
                     }
+                    else if(!strcmp(param, "IIR_ENABLE")) {
+                       int8_t v = atoi(val);
+                       if(v == 0 || v == 1) {
+                            jdsp->pCtl[jdsp->pCtlQidx].i8 = v;
+                            jdsp->pCtl[jdsp->pCtlQidx].param = PROP_IIR_ENABLE;
+                            jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
+                            jdsp->pCtlQidx++;
+                        } else {
+                            SNDERR("IIR_ENABLE value out of range. Accepted values are: [0|1]");
+                        }
+                    }
+                    else if(!strcmp(param, "IIR_FILTER")) {
+                       int16_t v = atoi(val);
+                       if(v >= 0 && v <= 11) {
+                            jdsp->pCtl[jdsp->pCtlQidx].i16 = v;
+                            jdsp->pCtl[jdsp->pCtlQidx].param = PROP_IIR_FILTER;
+                            jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
+                            jdsp->pCtlQidx++;
+                        } else {
+                            SNDERR("IIR_FILTER value out of range. Accepted values are: [0-11]");
+                        }
+                    }
+                    else if(!strcmp(param, "IIR_QFACT")) {
+                       float_t v = atof(val);
+                       if(v >= 0.0 && v <= 4.0) {
+                            jdsp->pCtl[jdsp->pCtlQidx].f32 = v;
+                            jdsp->pCtl[jdsp->pCtlQidx].param = PROP_IIR_QFACT;
+                            jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
+                            jdsp->pCtlQidx++;
+                        } else {
+                            SNDERR("IIR_QFACT value out of range. Accepted values are: [0.0-4.0] (float)");
+                        }
+                    }
+                    else if(!strcmp(param, "IIR_FREQ")) {
+                       int16_t v = atoi(val);
+                       if(v >= 0 && v <= 40000) {
+                            jdsp->pCtl[jdsp->pCtlQidx].i16 = v;
+                            jdsp->pCtl[jdsp->pCtlQidx].param = PROP_IIR_FREQ;
+                            jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
+                            jdsp->pCtlQidx++;
+                        } else {
+                            SNDERR("IIR_FREQ value out of range. Accepted values are: [0-40000]");
+                        }
+                    }
+                    else if(!strcmp(param, "IIR_GAIN")) {
+                       int16_t v = atoi(val);
+                       if(v >= -100 && v <= 100) {
+                            jdsp->pCtl[jdsp->pCtlQidx].i16 = v;
+                            jdsp->pCtl[jdsp->pCtlQidx].param = PROP_IIR_GAIN;
+                            jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
+                            jdsp->pCtlQidx++;
+                        } else {
+                            SNDERR("IIR_GAIN value out of range. Accepted values are: [-100-100]");
+                        }
+                    }
+
                 memset(ctl_buf, 0, CTL_BUFFSIZE);
                 if(jdsp->pCtlQidx >= CMD_QUEUE_LEN)
                     jdsp->pCtlQidx = 0;
@@ -911,6 +967,31 @@ static void jdspfx_set_property(snd_pcm_jdspfx_t *self) {
                     command_set_reverb(self->effectDspMain,self);
                 }
                     break;
+                case PROP_IIR_ENABLE: {
+                    self->iir_enabled = self->pCtl[i].i8;
+                    command_set_px4_vx2x1(self->effectDspMain, 1209, self->iir_enabled);
+                }
+                    break;
+                case PROP_IIR_FILTER: {
+                    self->iir_filter = self->pCtl[i].i16;
+                    command_set_px4_vx8x2p(self->effectDspMain, 1501, self->iir_filter, self->iir_qfact);
+                }
+                    break;
+                case PROP_IIR_QFACT: {
+                    self->iir_qfact = self->pCtl[i].f32;
+                    command_set_px4_vx8x2p(self->effectDspMain, 1501, self->iir_filter, self->iir_qfact);
+                }
+                    break;
+                case PROP_IIR_FREQ: {
+                    self->iir_freq = self->pCtl[i].i16;
+                    command_set_px4_vx2x2(self->effectDspMain, 189, (int16_t)self->iir_freq,(int16_t)self->iir_gain);
+                }
+                    break;
+                case PROP_IIR_GAIN: {
+                    self->iir_gain = self->pCtl[i].i16;
+                    command_set_px4_vx2x2(self->effectDspMain, 189, (int16_t)self->iir_freq,(int16_t)self->iir_gain);
+                }
+                    break;
                 default:
                     SNDERR("Invalid property: %d", self->pCtl[i].param);
                     break;
@@ -968,6 +1049,14 @@ static void sync_all_parameters(snd_pcm_jdspfx_t *self) {
     command_set_px4_vx2x1(self->effectDspMain,
                           1208, self->bs2b_enabled);
 
+    // iir
+    command_set_px4_vx2x1(self->effectDspMain,
+                          1209, self->iir_enabled);
+    command_set_px4_vx8x2p(self->effectDspMain,
+                          1501, self->iir_filter, self->iir_qfact);
+    command_set_px4_vx2x2(self->effectDspMain,
+                          189, (int16_t)self->iir_freq,(int16_t)self->iir_gain);
+
     // compressor
     command_set_px4_vx2x1(self->effectDspMain,
                           100, (int16_t)self->compression_pregain);
@@ -990,8 +1079,6 @@ static void sync_all_parameters(snd_pcm_jdspfx_t *self) {
     command_set_px4_vx2x1(self->effectDspMain,
                           1202, self->tone_enabled);
     command_set_eq (self->effectDspMain, self->tone_eq);
-
-
 
     // limiter
     command_set_limiter(self->effectDspMain,self->lim_threshold,self->lim_release);
@@ -1139,6 +1226,11 @@ static int jdsp_init(snd_pcm_extplug_t *ext)
     jdsp->bs2b_enabled = FALSE;
     jdsp->bs2b_fcut = 700;
     jdsp->bs2b_feed = 10;
+    jdsp->iir_enabled = FALSE;
+    jdsp->iir_filter = 0;
+    jdsp->iir_freq = 400;
+    jdsp->iir_gain = 10;
+    jdsp->iir_qfact = 0.707;
     jdsp->compression_pregain = 12;
     jdsp->compression_threshold = -60;
     jdsp->compression_knee = 30;

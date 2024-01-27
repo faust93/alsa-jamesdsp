@@ -14,6 +14,7 @@ extern "C"
 #include "AutoConvolver.h"
 #include "valve/12ax7amp/Tube.h"
 #include "JLimiter.h"
+#include "iirfilters.h"
 //#include "valve/wavechild670/wavechild670.h"
 }
 #define NUM_BANDS 15
@@ -77,16 +78,17 @@ protected:
 	AutoConvolver1x1 **convolver, **fullStereoConvolver;
 	tubeFilter tubeP[2];
 	t_bs2bdp bs2b;
+	iirfilter_t iir;
 //	Wavechild670 *compressor670;
 	ArbitraryEq *arbEq;
 	double *xaxis, *yaxis;
 	int eqfilterLength;
 	AutoConvolver1x1 **FIREq;
 	// Variables
-	double pregain, threshold, knee, ratio, attack, release, tubedrive, bassBoostCentreFreq, convGaindB, mMatrixMCoeff, mMatrixSCoeff;
+	double pregain, threshold, knee, ratio, attack, release, tubedrive, bassBoostCentreFreq, convGaindB, mMatrixMCoeff, mMatrixSCoeff, IIRfreq, IIRqfact, IIRgain;
 	int16_t bassBoostStrength, bassBoostFilterType, eqFilterType, bs2bLv, compressionEnabled, bassBoostEnabled, equalizerEnabled, reverbEnabled,
-	stereoWidenEnabled, convolverEnabled, convolverReady, bassLpReady, eqFIRReady, analogModelEnable, bs2bEnabled, viperddcEnabled;
-	int16_t mPreset, samplesInc, stringIndex, impChannels, previousimpChannels, bs2bfcut, bs2bfeed;
+	stereoWidenEnabled, convolverEnabled, convolverReady, bassLpReady, eqFIRReady, analogModelEnable, bs2bEnabled, viperddcEnabled, IIRenabled;
+	int16_t mPreset, samplesInc, stringIndex, impChannels, previousimpChannels, bs2bfcut, bs2bfeed, IIRfilter;
 
     reverbdata_t *r = NULL;
 
@@ -105,6 +107,8 @@ protected:
 	void refreshCompressor();
 	void refreshEqBands(uint32_t actualframeCount, double *bands);
 	void refreshReverb();
+	void refreshIIR();
+	
 	inline double map(double x, double in_min, double in_max, double out_min, double out_max)
 	{
 		return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;

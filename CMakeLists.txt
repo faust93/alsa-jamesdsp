@@ -23,6 +23,7 @@ set(JDSP_SRC
     src/ArbFIRGen.c
     src/vdc.c
     src/bs2b.c
+    src/iirfilters.c
     src/valve/12ax7amp/Tube.c
     src/valve/12ax7amp/wdfcircuits_triode.c
 )

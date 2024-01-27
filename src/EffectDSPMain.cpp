@@ -555,6 +555,18 @@ int32_t EffectDSPMain::command(uint32_t cmdCode, uint32_t cmdSize, void* pCmdDat
                 if(replyData!=NULL)*replyData = 0;
 				return 0;
 			}
+			else if (cmd == 1209)
+			{
+				int16_t val = ((int16_t *)cep)[8];
+				if (val) {
+					refreshIIR();
+					IIRenabled = 1;
+				}
+				else
+					IIRenabled = 0;
+                if(replyData!=NULL)*replyData = 0;
+				return 0;
+			}
 			else if (cmd == 1205)
 			{
 				convolverEnabled = ((int16_t *)cep)[8];
@@ -781,6 +793,26 @@ int32_t EffectDSPMain::command(uint32_t cmdCode, uint32_t cmdSize, void* pCmdDat
                 if(replyData!=NULL)*replyData = 0;
                 return 0;
             }
+ 			else if (cmd == 189)
+			{
+				double oldFreq = IIRfreq; 
+				double oldGgain = IIRgain;
+				int16_t newfreq = ((int16_t *)cep)[8];
+				int16_t newgain = ((int16_t *)cep)[9];
+				IIRfreq = newfreq/10.0f;
+				IIRgain = newgain/10.0f;
+                if (IIRenabled || (IIRfreq != oldFreq || IIRgain != oldGgain))
+                {
+					IIRenabled = 0;
+					refreshIIR();
+					IIRenabled = 1;
+#ifdef DEBUG
+					printf("[I] IIR - Freq: %d (%fdB), Gain: %f, Qfact: %f, Filter: %d\n",newfreq,IIRfreq,IIRgain,IIRqfact,IIRfilter);
+#endif
+				}
+                if(replyData!=NULL)*replyData = 0;
+				return 0;
+			}
         }
 		if (cep->psize == 4 && cep->vsize == 8)
 		{
@@ -797,6 +829,20 @@ int32_t EffectDSPMain::command(uint32_t cmdCode, uint32_t cmdSize, void* pCmdDat
 #ifdef DEBUG
 				printf("[I] limThreshold: %f, limRelease: %f\n", (float)limThreshold, (float)limRelease);
 #endif
+                if(replyData!=NULL)*replyData = 0;
+				return 0;
+			}
+			else if (cmd == 1501)
+			{
+				int16_t oldF = IIRfilter;
+				float_t oldQ = IIRqfact;
+				IIRfilter = (double)((float*)cep)[4];
+				IIRqfact = (double)((float*)cep)[5];
+				if (IIRenabled || (oldF != IIRfilter || oldQ != IIRqfact)) {
+					IIRenabled = 0;
+					refreshIIR();
+					IIRenabled = 1;
+				}
                 if(replyData!=NULL)*replyData = 0;
 				return 0;
 			}
@@ -1100,6 +1146,13 @@ void EffectDSPMain::refreshCompressor()
 	sf_advancecomp(&compressor, mSamplingRate, pregain, threshold, knee, ratio, attack, release, 0.003, 0.09, 0.16, 0.42, 0.98, -(pregain / 1.4));
 	ramp = 0.3;
 }
+void EffectDSPMain::refreshIIR()
+{
+	iir.pf_freq = IIRfreq;
+	iir.pf_gain = IIRgain;
+	iir.pf_qfact = IIRqfact; //0.707
+	IIRFilterInit(&iir, mSamplingRate, IIRfilter);
+}
 void EffectDSPMain::refreshEqBands(uint32_t DSPbufferLength, double *bands)
 {
 	if (!arbEq || !xaxis || !yaxis)
@@ -1279,6 +1332,11 @@ int32_t EffectDSPMain::process(audio_buffer_t *in, audio_buffer_t *out)
 					for (i = 0; i < DSPbufferLength; i++)
 						BS2BProcess(&bs2b, &inputBuffer[0][i], &inputBuffer[1][i]);
 				}
+				if (IIRenabled)
+				{
+					for (i = 0; i < DSPbufferLength; i++)
+						IIRFilterProcess(&iir, &inputBuffer[0][i], &inputBuffer[1][i]);
+				}
 				if (ramp < 1.0)
 					ramp += 0.05;
 				if (compressionEnabled)
@@ -1413,6 +1471,11 @@ int32_t EffectDSPMain::process(audio_buffer_t *in, audio_buffer_t *out)
 					for (i = 0; i < DSPbufferLength; i++)
 						BS2BProcess(&bs2b, &inputBuffer[0][i], &inputBuffer[1][i]);
 				}
+				if (IIRenabled)
+				{
+					for (i = 0; i < DSPbufferLength; i++)
+						IIRFilterProcess(&iir, &inputBuffer[0][i], &inputBuffer[1][i]);
+				}
 				if (ramp < 1.0)
 					ramp += 0.05;
 				if (compressionEnabled)
@@ -1546,6 +1609,11 @@ int32_t EffectDSPMain::process(audio_buffer_t *in, audio_buffer_t *out)
 				{
 					for (i = 0; i < DSPbufferLength; i++)
 						BS2BProcess(&bs2b, &inputBuffer[0][i], &inputBuffer[1][i]);
+				}
+				if (IIRenabled)
+				{
+					for (i = 0; i < DSPbufferLength; i++)
+						IIRFilterProcess(&iir, &inputBuffer[0][i], &inputBuffer[1][i]);
 				}
 				if (ramp < 1.0)
 					ramp += 0.05;

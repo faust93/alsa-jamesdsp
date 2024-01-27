@@ -67,6 +67,20 @@ void command_set_px4_vx4x60(EffectDSPMain *intf,int32_t cmd,float *values){
     intf->command(EFFECT_CMD_SET_PARAM, sizeof(float)*NUM_BANDS+5*sizeof(int32_t),cep,NULL,NULL);
     free(cep);
 }
+///Sends two 32bit float values 
+void command_set_px4_vx8x2p(EffectDSPMain *intf,int32_t cmd,float val1,float val2){
+    effect_param_t *cep = (effect_param_t *)malloc(6*sizeof(float));
+    cep->psize = 4;
+    cep->vsize = 8;
+    cep->status = 0;
+    float * cmd_data_int = (float *)cep->data;
+    cmd_data_int[0] = cmd;
+    cmd_data_int[1] = (float)val1;
+    cmd_data_int[2] = (float)val2;
+
+    intf->command(EFFECT_CMD_SET_PARAM, sizeof(float)*6,cep,NULL,NULL);
+    free(cep);
+}
 ///Sends two 32bit float values (as an array)
 void command_set_px4_vx8x2(EffectDSPMain *intf,int32_t cmd,float *values){
     effect_param_t *cep = (effect_param_t *)malloc(6*sizeof(float));
