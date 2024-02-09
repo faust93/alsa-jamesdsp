@@ -715,7 +715,50 @@ void *ctl_thread_loop(void *self)
                             SNDERR("SE_REFREQ value out of range. Accepted values are: [0-24000]");
                         }
                     }
-
+                    else if(!strcmp(param, "FSURROUND_ENABLE")) {
+                       int8_t v = atoi(val);
+                       if(v == 0 || v == 1) {
+                            jdsp->pCtl[jdsp->pCtlQidx].i8 = v;
+                            jdsp->pCtl[jdsp->pCtlQidx].param = PROP_FSURROUND_ENABLE;
+                            jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
+                            jdsp->pCtlQidx++;
+                        } else {
+                            SNDERR("FSURROUND_ENABLE value out of range. Accepted values are: [0|1]");
+                        }
+                    }
+                    else if(!strcmp(param, "FSURROUND_WIDE")) {
+                       float_t v = atof(val);
+                       if(v >= 0.0 && v <= 10.0) {
+                            jdsp->pCtl[jdsp->pCtlQidx].f32 = v;
+                            jdsp->pCtl[jdsp->pCtlQidx].param = PROP_FSURROUND_WIDE;
+                            jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
+                            jdsp->pCtlQidx++;
+                        } else {
+                            SNDERR("FSURROUND_WIDE value out of range. Accepted values are: [0.0-10.0] (float)");
+                        }
+                    }
+                    else if(!strcmp(param, "FSURROUND_MID")) {
+                       float_t v = atof(val);
+                       if(v >= 0.0 && v <= 10.0) {
+                            jdsp->pCtl[jdsp->pCtlQidx].f32 = v;
+                            jdsp->pCtl[jdsp->pCtlQidx].param = PROP_FSURROUND_MID;
+                            jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
+                            jdsp->pCtlQidx++;
+                        } else {
+                            SNDERR("FSURROUND_MID value out of range. Accepted values are: [0.0-10.0] (float)");
+                        }
+                    }
+                    else if(!strcmp(param, "FSURROUND_DEPTH")) {
+                       int16_t v = atoi(val);
+                       if(v >= 0 && v <= 1000) {
+                            jdsp->pCtl[jdsp->pCtlQidx].i16 = v;
+                            jdsp->pCtl[jdsp->pCtlQidx].param = PROP_FSURROUND_DEPTH;
+                            jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
+                            jdsp->pCtlQidx++;
+                        } else {
+                            SNDERR("FSURROUND_DEPTH value out of range. Accepted values are: [0-1000]");
+                        }
+                    }
                 memset(ctl_buf, 0, CTL_BUFFSIZE);
                 if(jdsp->pCtlQidx >= CMD_QUEUE_LEN)
                     jdsp->pCtlQidx = 0;
@@ -1040,6 +1083,26 @@ static void jdspfx_set_property(snd_pcm_jdspfx_t *self) {
                     command_set_px4_vx2x1(self->effectDspMain, 1211, (int16_t)self->se_refreq);
                 }
                     break;
+                case PROP_FSURROUND_ENABLE: {
+                    self->fs_enabled = self->pCtl[i].i8;
+                    command_set_px4_vx2x1(self->effectDspMain, 1207, self->fs_enabled);
+                }
+                    break;
+                case PROP_FSURROUND_WIDE: {
+                    self->fs_wide = self->pCtl[i].f32;
+                    command_set_px4_vx8x2p(self->effectDspMain, 1503, self->fs_wide, self->fs_mid);
+                }
+                    break;
+                case PROP_FSURROUND_MID: {
+                    self->fs_mid = self->pCtl[i].f32;
+                    command_set_px4_vx8x2p(self->effectDspMain, 1503, self->fs_wide, self->fs_mid);
+                }
+                    break;
+                case PROP_FSURROUND_DEPTH: {
+                    self->fs_depth = self->pCtl[i].i16;
+                    command_set_px4_vx2x1(self->effectDspMain, 1213, (int16_t)self->fs_depth);
+                }
+                    break;
                 default:
                     SNDERR("Invalid property: %d", self->pCtl[i].param);
                     break;
@@ -1149,6 +1212,14 @@ static void sync_all_parameters(snd_pcm_jdspfx_t *self) {
                           1502, self->se_exciter, 0);
     command_set_px4_vx2x1(self->effectDspMain,
                           1210, self->se_enabled);
+
+    // colorful music (field surround)
+    command_set_px4_vx2x1(self->effectDspMain,
+                          1213, self->fs_depth);
+    command_set_px4_vx8x2p(self->effectDspMain,
+                          1503, self->fs_wide, self->fs_mid);
+    command_set_px4_vx2x1(self->effectDspMain,
+                          1207, self->fs_enabled);
 }
 
 static snd_pcm_sframes_t jdsp_transfer(snd_pcm_extplug_t *ext,
@@ -1313,6 +1384,10 @@ static int jdsp_init(snd_pcm_extplug_t *ext)
     jdsp->se_enabled = FALSE;
     jdsp->se_exciter = 10;
     jdsp->se_refreq = 7600;
+    jdsp->fs_enabled = FALSE;
+    jdsp->fs_depth = 1;
+    jdsp->fs_mid = 1.0;
+    jdsp->fs_wide = 0.0;
 
     jdsp->pCtl = (jdsp_param_t *) malloc(CMD_QUEUE_LEN * sizeof(jdsp_param_t));
     for(int i = 0; i < CMD_QUEUE_LEN; i++) {

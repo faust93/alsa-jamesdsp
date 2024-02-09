@@ -24,8 +24,13 @@ set(JDSP_SRC
     src/vdc.c
     src/bs2b.c
     src/viper/effects/SpectrumExtend.cpp
+    src/viper/effects/ColorfulMusic.cpp
     src/viper/utils/Harmonic.cpp
     src/viper/utils/MultiBiquad.cpp
+    src/viper/utils/Biquad.cpp
+    src/viper/utils/DepthSurround.cpp
+    src/viper/utils/Stereo3DSurround.cpp
+    src/viper/utils/TimeConstDelay.cpp
     src/iirfilters.c
     src/valve/12ax7amp/Tube.c
     src/valve/12ax7amp/wdfcircuits_triode.c

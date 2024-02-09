@@ -619,6 +619,37 @@ int32_t EffectDSPMain::command(uint32_t cmdCode, uint32_t cmdSize, void* pCmdDat
                 if(replyData!=NULL)*replyData = 0;
                 return 0;
 			}
+			else if (cmd == 1207)
+			{
+				int16_t val = ((int16_t *)cep)[8];
+				if (val) {
+                    colorfulMusic.SetEnable(true);
+                    colorfulMusic.SetSamplingRate(mSamplingRate);
+					colorfulMusic.SetDepthValue((int16_t)fSurroundDepth);
+					colorfulMusic.SetMidImageValue(fSurroundMid);
+					colorfulMusic.SetWidenValue(fSurroundWide);
+                    colorfulMusic.Reset();
+					fSurroundEnabled = 1;
+				}
+				else {
+					colorfulMusic.SetEnable(false);
+					fSurroundEnabled = 0;
+				}
+                if(replyData!=NULL)*replyData = 0;
+				return 0;
+			}
+			else if (cmd == 1213)
+			{
+				int16_t oldD = fSurroundDepth;
+				fSurroundDepth = ((int16_t *)cep)[8];
+				if (fSurroundEnabled || oldD != fSurroundDepth) {
+                    fSurroundEnabled = 0;
+					colorfulMusic.SetDepthValue((int16_t)fSurroundDepth);
+					fSurroundEnabled = 1;
+				}
+                if(replyData!=NULL)*replyData = 0;
+				return 0;
+			}
 			else if (cmd == 1212)
 			{
 				int16_t oldVal = viperddcEnabled;
@@ -891,6 +922,21 @@ int32_t EffectDSPMain::command(uint32_t cmdCode, uint32_t cmdSize, void* pCmdDat
 					spectrumEnabled = 0;
 					spectrumExtend.SetExciter((float) spectrumExciter);
 					spectrumEnabled = 1;
+				}
+                if(replyData!=NULL)*replyData = 0;
+				return 0;
+			}
+			else if (cmd == 1503)
+			{
+				float_t oldW = fSurroundWide;
+				float_t oldM = fSurroundMid;
+				fSurroundWide = ((float*)cep)[4];
+				fSurroundMid = ((float*)cep)[5];
+				if (fSurroundEnabled || (oldW != fSurroundWide || oldM != fSurroundMid)) {
+					fSurroundEnabled = 0;
+					colorfulMusic.SetWidenValue(fSurroundWide);
+					colorfulMusic.SetMidImageValue(fSurroundMid);
+					fSurroundEnabled = 1;
 				}
                 if(replyData!=NULL)*replyData = 0;
 				return 0;
@@ -1325,6 +1371,10 @@ int32_t EffectDSPMain::process(audio_buffer_t *in, audio_buffer_t *out)
 						inputBuffer[1][i] = outLR - outRL;
 					}
 				}
+				if (fSurroundEnabled)
+				{
+					colorfulMusic.Process(inputBuffer[0], inputBuffer[1], DSPbufferLength);
+				}
 				if (reverbEnabled)
 				{
 					for (i = 0; i < DSPbufferLength; i++)
@@ -1469,6 +1519,10 @@ int32_t EffectDSPMain::process(audio_buffer_t *in, audio_buffer_t *out)
 						inputBuffer[1][i] = outLR - outRL;
 					}
 				}
+				if (fSurroundEnabled)
+				{
+					colorfulMusic.Process(inputBuffer[0], inputBuffer[1], DSPbufferLength);
+				}
 				if (reverbEnabled)
 				{
 					for (i = 0; i < DSPbufferLength; i++)
@@ -1612,6 +1666,10 @@ int32_t EffectDSPMain::process(audio_buffer_t *in, audio_buffer_t *out)
 						inputBuffer[0][i] = outLR + outRL;
 						inputBuffer[1][i] = outLR - outRL;
 					}
+				}
+				if (fSurroundEnabled)
+				{
+					colorfulMusic.Process(inputBuffer[0], inputBuffer[1], DSPbufferLength);
 				}
 				if (reverbEnabled)
 				{

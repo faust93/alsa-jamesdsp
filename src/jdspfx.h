@@ -81,7 +81,12 @@ enum {
     /* spectrumextend */
     PROP_SE_ENABLE,
     PROP_SE_EXCITER,
-    PROP_SE_REFREQ
+    PROP_SE_REFREQ,
+    /* colorful music */
+    PROP_FSURROUND_ENABLE,
+    PROP_FSURROUND_DEPTH,
+    PROP_FSURROUND_WIDE,
+    PROP_FSURROUND_MID
 };
 
 typedef struct jdsp_param_s {
@@ -211,6 +216,12 @@ typedef struct snd_pcm_jdspfx {
     float_t se_exciter;
     int32_t se_refreq;
 
+    // VFX_RE ColorfulMusic (Field Surround)
+    int8_t fs_enabled;
+    int32_t fs_depth;
+    float_t fs_wide;
+    float_t fs_mid;
+
     audio_buffer_t *in;
     audio_buffer_t *out;
 
@@ -284,6 +295,10 @@ int jdsp_cfg_write(snd_pcm_jdspfx_t *self){
     fprintf(fn, "SE_ENABLE=%d\n", self->se_enabled);
     fprintf(fn, "SE_EXCITER=%f\n", self->se_exciter);
     fprintf(fn, "SE_REFREQ=%d\n", self->se_refreq);
+    fprintf(fn, "FSURROUND_ENABLE=%d\n", self->fs_enabled);
+    fprintf(fn, "FSURROUND_DEPTH=%d\n", self->fs_depth);
+    fprintf(fn, "FSURROUND_WIDE=%f\n", self->fs_wide);
+    fprintf(fn, "FSURROUND_MID=%f\n", self->fs_mid);
     fclose(fn);
     return 0;
 }
@@ -769,6 +784,38 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                         self->se_exciter = v;
                     } else {
                         printf("SE_EXCITER value out of range. Accepted values are: [0.0000-50.0000]\n");
+                    }
+                }
+                else if(!strcmp(param, "FSURROUND_ENABLE")) {
+                    int8_t v = atoi(val);
+                    if(v == 0 || v == 1) {
+                        self->fs_enabled = v;
+                    } else {
+                        printf("FSURROUND_ENABLE value out of range. Accepted values are: [0|1]\n");
+                    }
+                }
+                else if(!strcmp(param, "FSURROUND_DEPTH")) {
+                    int16_t v = atoi(val);
+                    if(v >= 0 && v <= 1000) {
+                        self->fs_depth = v;
+                    } else {
+                        printf("FSURROUND_DEPTH value out of range. Accepted values are: [0-1000]\n");
+                    }
+                }
+                else if(!strcmp(param, "FSURROUND_WIDE")) {
+                    float_t v = atof(val);
+                    if(v >= 0.0 && v <= 10.0) {
+                        self->fs_wide = v;
+                    } else {
+                        printf("FSURROUND_WIDE value out of range. Accepted values are: [0.0000-10.0000]\n");
+                    }
+                }
+                else if(!strcmp(param, "FSURROUND_MID")) {
+                    float_t v = atof(val);
+                    if(v >= 0.0 && v <= 10.0) {
+                        self->fs_mid = v;
+                    } else {
+                        printf("FSURROUND_MID value out of range. Accepted values are: [0.0000-10.0000]\n");
                     }
                 }
                 lines++;
