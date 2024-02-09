@@ -682,6 +682,39 @@ void *ctl_thread_loop(void *self)
                             SNDERR("IIR_GAIN value out of range. Accepted values are: [-100-100]");
                         }
                     }
+                    else if(!strcmp(param, "SE_ENABLE")) {
+                       int8_t v = atoi(val);
+                       if(v == 0 || v == 1) {
+                            jdsp->pCtl[jdsp->pCtlQidx].i8 = v;
+                            jdsp->pCtl[jdsp->pCtlQidx].param = PROP_SE_ENABLE;
+                            jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
+                            jdsp->pCtlQidx++;
+                        } else {
+                            SNDERR("SE_ENABLE value out of range. Accepted values are: [0|1]");
+                        }
+                    }
+                    else if(!strcmp(param, "SE_EXCITER")) {
+                       float_t v = atof(val);
+                       if(v >= 0.0 && v <= 50.0) {
+                            jdsp->pCtl[jdsp->pCtlQidx].f32 = v;
+                            jdsp->pCtl[jdsp->pCtlQidx].param = PROP_SE_EXCITER;
+                            jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
+                            jdsp->pCtlQidx++;
+                        } else {
+                            SNDERR("SE_EXCITER value out of range. Accepted values are: [0.0-50.0] (float)");
+                        }
+                    }
+                    else if(!strcmp(param, "SE_REFREQ")) {
+                       int16_t v = atoi(val);
+                       if(v >= 0 && v <= 24000) {
+                            jdsp->pCtl[jdsp->pCtlQidx].i16 = v;
+                            jdsp->pCtl[jdsp->pCtlQidx].param = PROP_SE_REFREQ;
+                            jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
+                            jdsp->pCtlQidx++;
+                        } else {
+                            SNDERR("SE_REFREQ value out of range. Accepted values are: [0-24000]");
+                        }
+                    }
 
                 memset(ctl_buf, 0, CTL_BUFFSIZE);
                 if(jdsp->pCtlQidx >= CMD_QUEUE_LEN)
@@ -992,6 +1025,21 @@ static void jdspfx_set_property(snd_pcm_jdspfx_t *self) {
                     command_set_px4_vx2x2(self->effectDspMain, 189, (int16_t)self->iir_freq,(int16_t)self->iir_gain);
                 }
                     break;
+                case PROP_SE_ENABLE: {
+                    self->se_enabled = self->pCtl[i].i8;
+                    command_set_px4_vx2x1(self->effectDspMain, 1210, self->se_enabled);
+                }
+                    break;
+                case PROP_SE_EXCITER: {
+                    self->se_exciter = self->pCtl[i].f32;
+                    command_set_px4_vx8x2p(self->effectDspMain, 1502, self->se_exciter, 0);
+                }
+                    break;
+                case PROP_SE_REFREQ: {
+                    self->se_refreq = self->pCtl[i].i16;
+                    command_set_px4_vx2x1(self->effectDspMain, 1211, (int16_t)self->se_refreq);
+                }
+                    break;
                 default:
                     SNDERR("Invalid property: %d", self->pCtl[i].param);
                     break;
@@ -1050,13 +1098,13 @@ static void sync_all_parameters(snd_pcm_jdspfx_t *self) {
                           1208, self->bs2b_enabled);
 
     // iir
-    command_set_px4_vx2x1(self->effectDspMain,
-                          1209, self->iir_enabled);
     command_set_px4_vx8x2p(self->effectDspMain,
                           1501, self->iir_filter, self->iir_qfact);
     command_set_px4_vx2x2(self->effectDspMain,
                           189, (int16_t)self->iir_freq,(int16_t)self->iir_gain);
-
+    command_set_px4_vx2x1(self->effectDspMain,
+                          1209, self->iir_enabled);
+    
     // compressor
     command_set_px4_vx2x1(self->effectDspMain,
                           100, (int16_t)self->compression_pregain);
@@ -1094,6 +1142,13 @@ static void sync_all_parameters(snd_pcm_jdspfx_t *self) {
     command_set_px4_vx2x1(self->effectDspMain,
                           1205, self->convolver_enabled);
 
+    // spectrumextend
+    command_set_px4_vx2x1(self->effectDspMain,
+                          1211, self->se_refreq);
+    command_set_px4_vx8x2p(self->effectDspMain,
+                          1502, self->se_exciter, 0);
+    command_set_px4_vx2x1(self->effectDspMain,
+                          1210, self->se_enabled);
 }
 
 static snd_pcm_sframes_t jdsp_transfer(snd_pcm_extplug_t *ext,
@@ -1254,6 +1309,10 @@ static int jdsp_init(snd_pcm_extplug_t *ext)
     memset(jdsp->convolver_file, 0, sizeof(jdsp->convolver_file));
     jdsp->convolver_gain = 0;
     jdsp->convolver_quality = 100;
+
+    jdsp->se_enabled = FALSE;
+    jdsp->se_exciter = 10;
+    jdsp->se_refreq = 7600;
 
     jdsp->pCtl = (jdsp_param_t *) malloc(CMD_QUEUE_LEN * sizeof(jdsp_param_t));
     for(int i = 0; i < CMD_QUEUE_LEN; i++) {

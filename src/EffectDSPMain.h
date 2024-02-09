@@ -3,6 +3,7 @@
 #include "Effect.h"
 #include <pthread.h>
 #include <math.h>
+#include "viper/effects/SpectrumExtend.h"
 extern "C"
 {
 #include "bs2b.h"
@@ -78,6 +79,7 @@ protected:
 	AutoConvolver1x1 **convolver, **fullStereoConvolver;
 	tubeFilter tubeP[2];
 	t_bs2bdp bs2b;
+	SpectrumExtend spectrumExtend;
 	iirfilter_t iir;
 //	Wavechild670 *compressor670;
 	ArbitraryEq *arbEq;
@@ -87,8 +89,10 @@ protected:
 	// Variables
 	double pregain, threshold, knee, ratio, attack, release, tubedrive, bassBoostCentreFreq, convGaindB, mMatrixMCoeff, mMatrixSCoeff, IIRfreq, IIRqfact, IIRgain;
 	int16_t bassBoostStrength, bassBoostFilterType, eqFilterType, bs2bLv, compressionEnabled, bassBoostEnabled, equalizerEnabled, reverbEnabled,
-	stereoWidenEnabled, convolverEnabled, convolverReady, bassLpReady, eqFIRReady, analogModelEnable, bs2bEnabled, viperddcEnabled, IIRenabled;
+	stereoWidenEnabled, convolverEnabled, convolverReady, bassLpReady, eqFIRReady, analogModelEnable, bs2bEnabled, viperddcEnabled, IIRenabled, spectrumEnabled;
 	int16_t mPreset, samplesInc, stringIndex, impChannels, previousimpChannels, bs2bfcut, bs2bfeed, IIRfilter;
+	float_t spectrumExciter;
+	uint32_t spectrumFreq;
 
     reverbdata_t *r = NULL;
 

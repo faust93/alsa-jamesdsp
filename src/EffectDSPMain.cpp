@@ -567,6 +567,41 @@ int32_t EffectDSPMain::command(uint32_t cmdCode, uint32_t cmdSize, void* pCmdDat
                 if(replyData!=NULL)*replyData = 0;
 				return 0;
 			}
+			else if (cmd == 1210)
+			{
+				int16_t val = ((int16_t *)cep)[8];
+				if (val) {
+					spectrumExtend.SetSamplingRate(mSamplingRate);
+					spectrumExtend.SetReferenceFrequency((uint32_t)spectrumFreq);
+					spectrumExtend.SetExciter(spectrumExciter);
+					spectrumExtend.SetEnable(true);
+					spectrumExtend.Reset();
+					spectrumEnabled = 1;
+				}
+				else {
+					spectrumExtend.SetEnable(false);
+					spectrumEnabled = 0;
+				}
+                if(replyData!=NULL)*replyData = 0;
+				return 0;
+			}
+ 			else if (cmd == 1211)
+			{
+				uint32_t oldFreq = spectrumFreq; 
+				uint32_t newfreq = ((int16_t *)cep)[8];
+				spectrumFreq = newfreq;
+                if (spectrumEnabled || spectrumFreq != oldFreq)
+                {
+					spectrumEnabled = 0;
+					spectrumExtend.SetReferenceFrequency(spectrumFreq);
+					spectrumEnabled = 1;
+#ifdef DEBUG
+					printf("[I] SpectrumExtend - Freq: %d\n",newfreq);
+#endif
+				}
+                if(replyData!=NULL)*replyData = 0;
+				return 0;
+			}
 			else if (cmd == 1205)
 			{
 				convolverEnabled = ((int16_t *)cep)[8];
@@ -844,6 +879,18 @@ int32_t EffectDSPMain::command(uint32_t cmdCode, uint32_t cmdSize, void* pCmdDat
 					IIRenabled = 0;
 					refreshIIR();
 					IIRenabled = iirstate;
+				}
+                if(replyData!=NULL)*replyData = 0;
+				return 0;
+			}
+			else if (cmd == 1502)
+			{
+				float_t oldE = spectrumExciter;
+				spectrumExciter = ((float*)cep)[4];
+				if (spectrumEnabled || oldE != spectrumExciter) {
+					spectrumEnabled = 0;
+					spectrumExtend.SetExciter((float) spectrumExciter);
+					spectrumEnabled = 1;
 				}
                 if(replyData!=NULL)*replyData = 0;
 				return 0;
@@ -1246,6 +1293,11 @@ int32_t EffectDSPMain::process(audio_buffer_t *in, audio_buffer_t *out)
 			pos++;
 			if (pos == DSPbufferLength)
 			{
+				if (spectrumEnabled)
+				{
+					for (i = 0; i < DSPbufferLength; i++)
+                        spectrumExtend.Process(&inputBuffer[0][i], &inputBuffer[1][i]);
+				}
 				if (bassBoostEnabled)
 				{
 					if (bassLpReady > 0)
@@ -1385,6 +1437,11 @@ int32_t EffectDSPMain::process(audio_buffer_t *in, audio_buffer_t *out)
 			pos++;
 			if (pos == DSPbufferLength)
 			{
+				if (spectrumEnabled)
+				{
+					for (i = 0; i < DSPbufferLength; i++)
+                        spectrumExtend.Process(&inputBuffer[0][i], &inputBuffer[1][i]);
+				}
 				if (bassBoostEnabled)
 				{
 					if (bassLpReady > 0)
@@ -1524,6 +1581,11 @@ int32_t EffectDSPMain::process(audio_buffer_t *in, audio_buffer_t *out)
 			pos++;
 			if (pos == DSPbufferLength)
 			{
+				if (spectrumEnabled)
+				{
+					for (i = 0; i < DSPbufferLength; i++)
+                        spectrumExtend.Process(&inputBuffer[0][i], &inputBuffer[1][i]);
+				}
 				if (bassBoostEnabled)
 				{
 					if (bassLpReady > 0)

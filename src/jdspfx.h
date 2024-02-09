@@ -77,7 +77,11 @@ enum {
     PROP_IIR_FILTER,
     PROP_IIR_FREQ,
     PROP_IIR_GAIN,
-    PROP_IIR_QFACT
+    PROP_IIR_QFACT,
+    /* spectrumextend */
+    PROP_SE_ENABLE,
+    PROP_SE_EXCITER,
+    PROP_SE_REFREQ
 };
 
 typedef struct jdsp_param_s {
@@ -202,6 +206,11 @@ typedef struct snd_pcm_jdspfx {
     int32_t iir_gain;
     float_t iir_qfact;
 
+    // VFX_RE SpectrumExtend
+    int8_t se_enabled;
+    float_t se_exciter;
+    int32_t se_refreq;
+
     audio_buffer_t *in;
     audio_buffer_t *out;
 
@@ -272,6 +281,9 @@ int jdsp_cfg_write(snd_pcm_jdspfx_t *self){
     fprintf(fn, "IIR_FREQ=%d\n", self->iir_freq);
     fprintf(fn, "IIR_GAIN=%d\n", self->iir_gain);
     fprintf(fn, "IIR_QFACT=%f\n", self->iir_qfact);
+    fprintf(fn, "SE_ENABLE=%d\n", self->se_enabled);
+    fprintf(fn, "SE_EXCITER=%f\n", self->se_exciter);
+    fprintf(fn, "SE_REFREQ=%d\n", self->se_refreq);
     fclose(fn);
     return 0;
 }
@@ -733,6 +745,30 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                         self->iir_qfact = v;
                     } else {
                         printf("IIR_QFACT value out of range. Accepted values are: [0.0000-4.0000]\n");
+                    }
+                }
+                else if(!strcmp(param, "SE_ENABLE")) {
+                    int8_t v = atoi(val);
+                    if(v == 0 || v == 1) {
+                        self->se_enabled = v;
+                    } else {
+                        printf("SE_ENABLE value out of range. Accepted values are: [0|1]\n");
+                    }
+                }
+                else if(!strcmp(param, "SE_REFREQ")) {
+                    int16_t v = atoi(val);
+                    if(v >= 0 && v <= 24000) {
+                        self->se_refreq = v;
+                    } else {
+                        printf("SE_REFREQ value out of range. Accepted values are: [0-24000]\n");
+                    }
+                }
+                else if(!strcmp(param, "SE_EXCITER")) {
+                    float_t v = atof(val);
+                    if(v >= 0.0 && v <= 50.0) {
+                        self->se_exciter = v;
+                    } else {
+                        printf("SE_EXCITER value out of range. Accepted values are: [0.0000-50.0000]\n");
                     }
                 }
                 lines++;
