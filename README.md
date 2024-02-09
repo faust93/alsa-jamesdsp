@@ -36,7 +36,9 @@ Effects:
 * Reverbation (Progenitor2)
 * Bass boost
 * Stereo widener (Mid/Side)
-* IIR filters (NEW! Foobar2000's IIR DSP Filters port)
+* IIR filters (Foobar2000's IIR DSP Filters port)
+* Spectrum Extender ([VFX_RE port](https://github.com/AndroidAudioMods/ViPERFX_RE))
+* Field Surround (VFX_RE port)
 
 ### Build & Install
 
@@ -138,6 +140,13 @@ IIR_FILTER=11
 IIR_FREQ=26769
 IIR_GAIN=91
 IIR_QFACT=0.900000
+SE_ENABLE=0
+SE_EXCITER=12.987170
+SE_REFREQ=5042
+FSURROUND_ENABLE=0
+FSURROUND_DEPTH=54
+FSURROUND_WIDE=2.564740
+FSURROUND_MID=2.016670
 ```
 
 ##### Change DSP properties in real time
@@ -208,7 +217,14 @@ There's a simple app as well used to control DSP properties using web browser [a
 | CONVOLVER_GAIN            | Float | -80..30          | Convolver gain (dB)                                                                                                                                  |
 | CONVOLVER_FILE            | Str   | file.irs/wav     | Impulse response file                                                                                                                                |
 | IIR_ENABLE                | Bool  | 0..1             | Enable IIR filter                                                                                                                                    |
-| IIR_FILTER                | Int   | 0.11             | 0:`LPF`,1:`HPF`,2:`BPCSGF`,3:`BPZPGF`,4:`APF`,5:`NOTCH`,6:`RIAA_phono`,7:`PEQ`,8:`BBOOST`<br />9:`LSH`,10:`RIAA_CD`,11:`HSH` |
+| IIR_FILTER                | Int   | 0..11            | 0:`LPF`,1:`HPF`,2:`BPCSGF`,3:`BPZPGF`,4:`APF`,5:`NOTCH`,6:`RIAA_phono`,7:`PEQ`,8:`BBOOST`<br />9:`LSH`,10:`RIAA_CD`,11:`HSH` |
 | IIR_FREQ                  | Int   | 0..40000         | Filter frequency (db)                                                                                                                                |
 | IIR_GAIN                  | Int   | -100..100        | Filter gain                                                                                                                                          |
 | IIR_QFACT                 | Float | 0.0...4.0        | Filter Qfactor                                                                                                                                       |
+| SE_ENABLE                 | Int   | 0..1             | Spectrum Extend                                                                                                                                      |
+| SE_EXCITER                | Float | 0..50.0          | Spectrum exciter level                                                                                                                               |
+| SE_REFREQ                 | Int   | 0..24000         | Spectrum reference freq                                                                                                                              |
+| FSURROUND_ENABLE          | Int   | 0..1             | Field Surround                                                                                                                                       |
+| FSURROUND_DEPTH           | Int   | 0..1000          | Field surround strength                                                                                                                              |
+| FSURROUND_WIDE            | Float | 0..10.0          | Field surround widen                                                                                                                                 |
+| FSURROUND_MID             | Float | 0..10.0          | Field surround mid image                                                                                                                             |
