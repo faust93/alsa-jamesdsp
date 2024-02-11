@@ -39,6 +39,7 @@ Effects:
 * IIR filters (Foobar2000's IIR DSP Filters port)
 * Spectrum Extender ([VFX_RE port](https://github.com/AndroidAudioMods/ViPERFX_RE))
 * Field Surround (VFX_RE port)
+* AnalogX (VFX_RE port)
 
 ### Build & Install
 
@@ -147,6 +148,8 @@ FSURROUND_ENABLE=0
 FSURROUND_DEPTH=54
 FSURROUND_WIDE=2.564740
 FSURROUND_MID=2.016670
+ANALOGX_ENABLE=0
+ANALOGX_MODEL=2
 ```
 
 ##### Change DSP properties in real time
@@ -228,3 +231,5 @@ There's a simple app as well used to control DSP properties using web browser [a
 | FSURROUND_DEPTH           | Int   | 0..1000          | Field surround strength                                                                                                                              |
 | FSURROUND_WIDE            | Float | 0..10.0          | Field surround widen                                                                                                                                 |
 | FSURROUND_MID             | Float | 0..10.0          | Field surround mid image                                                                                                                             |
+| ANALOGX_ENABLE            | Int   | 0..1             | AnalogX Enable                                                                                                                                       |
+| ANALOGX_MODEL             | Int   | 0..3             | AnaogX processing model                                                                                                                              |
