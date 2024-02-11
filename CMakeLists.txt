@@ -25,6 +25,7 @@ set(JDSP_SRC
     src/bs2b.c
     src/viper/effects/SpectrumExtend.cpp
     src/viper/effects/ColorfulMusic.cpp
+    src/viper/effects/AnalogX.cpp
     src/viper/utils/Harmonic.cpp
     src/viper/utils/MultiBiquad.cpp
     src/viper/utils/Biquad.cpp
@@ -45,7 +46,12 @@ pkg_check_modules(SNDFILE REQUIRED
         sndfile)
 
 set(CMAKE_SHARED_LINKER_FLAGS "-rdynamic -ldl")
-add_definitions("-O3 -fPIC -DPIC -Wall -Wextra -funroll-loops -ffast-math")
+
+if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "aarch64")
+        add_definitions("-O3 -fPIC -DPIC -funroll-loops -mcmodel=tiny -funsafe-math-optimizations -march=armv8-a+crc+crypto -mtune=cortex-a53")
+else()
+        add_definitions("-O3 -fPIC -DPIC -Wall -Wextra -funroll-loops -ffast-math")
+endif()
 
 add_library(alsa-jamesdsp SHARED ${JDSP_SRC})
 

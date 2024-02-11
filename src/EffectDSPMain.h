@@ -5,6 +5,7 @@
 #include <math.h>
 #include "viper/effects/SpectrumExtend.h"
 #include "viper/effects/ColorfulMusic.h"
+#include "viper/effects/AnalogX.h"
 extern "C"
 {
 #include "bs2b.h"
@@ -85,6 +86,7 @@ protected:
     // VFX_RE Effects
 	SpectrumExtend spectrumExtend;
 	ColorfulMusic colorfulMusic;
+	AnalogX analogX;
 
 	iirfilter_t iir;
 //	Wavechild670 *compressor670;
@@ -96,7 +98,7 @@ protected:
 	double pregain, threshold, knee, ratio, attack, release, tubedrive, bassBoostCentreFreq, convGaindB, mMatrixMCoeff, mMatrixSCoeff, IIRfreq, IIRqfact, IIRgain;
 	int16_t bassBoostStrength, bassBoostFilterType, eqFilterType, bs2bLv, compressionEnabled, bassBoostEnabled, equalizerEnabled, reverbEnabled,
 	stereoWidenEnabled, convolverEnabled, convolverReady, bassLpReady, eqFIRReady, analogModelEnable, bs2bEnabled, viperddcEnabled, IIRenabled, spectrumEnabled, fSurroundEnabled;
-	int16_t mPreset, samplesInc, stringIndex, impChannels, previousimpChannels, bs2bfcut, bs2bfeed, IIRfilter, fSurroundDepth;
+	int16_t mPreset, samplesInc, stringIndex, impChannels, previousimpChannels, bs2bfcut, bs2bfeed, IIRfilter, fSurroundDepth, AXEnabled, AXModel;
 	float_t spectrumExciter, fSurroundWide, fSurroundMid;
 	uint32_t spectrumFreq;
 

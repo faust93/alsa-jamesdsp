@@ -590,11 +590,9 @@ int32_t EffectDSPMain::command(uint32_t cmdCode, uint32_t cmdSize, void* pCmdDat
 				uint32_t oldFreq = spectrumFreq; 
 				uint32_t newfreq = ((int16_t *)cep)[8];
 				spectrumFreq = newfreq;
-                if (spectrumEnabled || spectrumFreq != oldFreq)
+                if (spectrumEnabled && spectrumFreq != oldFreq)
                 {
-					spectrumEnabled = 0;
 					spectrumExtend.SetReferenceFrequency(spectrumFreq);
-					spectrumEnabled = 1;
 #ifdef DEBUG
 					printf("[I] SpectrumExtend - Freq: %d\n",newfreq);
 #endif
@@ -638,14 +636,39 @@ int32_t EffectDSPMain::command(uint32_t cmdCode, uint32_t cmdSize, void* pCmdDat
                 if(replyData!=NULL)*replyData = 0;
 				return 0;
 			}
+			else if (cmd == 1215)
+			{
+				int16_t oldM = AXModel;
+				AXModel = ((int16_t *)cep)[8];
+				if (AXEnabled && oldM != AXModel) {
+					analogX.SetProcessingModel(AXModel);
+				}
+                if(replyData!=NULL)*replyData = 0;
+				return 0;
+			}
+			else if (cmd == 1214)
+			{
+				int16_t val = ((int16_t *)cep)[8];
+				if (val) {
+					analogX.SetEnable(true);
+					analogX.SetSamplingRate(mSamplingRate);
+					analogX.SetProcessingModel(AXModel);
+					analogX.Reset();
+					AXEnabled = 1;
+				}
+				else {
+					analogX.SetEnable(false);
+					AXEnabled = 0;
+				}
+                if(replyData!=NULL)*replyData = 0;
+				return 0;
+			}
 			else if (cmd == 1213)
 			{
 				int16_t oldD = fSurroundDepth;
 				fSurroundDepth = ((int16_t *)cep)[8];
-				if (fSurroundEnabled || oldD != fSurroundDepth) {
-                    fSurroundEnabled = 0;
+				if (fSurroundEnabled && oldD != fSurroundDepth) {
 					colorfulMusic.SetDepthValue((int16_t)fSurroundDepth);
-					fSurroundEnabled = 1;
 				}
                 if(replyData!=NULL)*replyData = 0;
 				return 0;
@@ -867,12 +890,9 @@ int32_t EffectDSPMain::command(uint32_t cmdCode, uint32_t cmdSize, void* pCmdDat
 				int16_t newgain = ((int16_t *)cep)[9];
 				IIRfreq = newfreq/10.0f;
 				IIRgain = newgain/10.0f;
-                if (IIRenabled || (IIRfreq != oldFreq || IIRgain != oldGgain))
+                if (IIRenabled && (IIRfreq != oldFreq || IIRgain != oldGgain))
                 {
-					int8_t iirstate = IIRenabled;
-					IIRenabled = 0;
 					refreshIIR();
-					IIRenabled = iirstate;
 #ifdef DEBUG
 					printf("[I] IIR - Freq: %d (%fdB), Gain: %f, Qfact: %f, Filter: %d\n",newfreq,IIRfreq,IIRgain,IIRqfact,IIRfilter);
 #endif
@@ -905,11 +925,8 @@ int32_t EffectDSPMain::command(uint32_t cmdCode, uint32_t cmdSize, void* pCmdDat
 				float_t oldQ = IIRqfact;
 				IIRfilter = (double)((float*)cep)[4];
 				IIRqfact = (double)((float*)cep)[5];
-				if (IIRenabled || (oldF != IIRfilter || oldQ != IIRqfact)) {
-					int8_t iirstate = IIRenabled;
-					IIRenabled = 0;
+				if (IIRenabled && (oldF != IIRfilter || oldQ != IIRqfact)) {
 					refreshIIR();
-					IIRenabled = iirstate;
 				}
                 if(replyData!=NULL)*replyData = 0;
 				return 0;
@@ -918,10 +935,8 @@ int32_t EffectDSPMain::command(uint32_t cmdCode, uint32_t cmdSize, void* pCmdDat
 			{
 				float_t oldE = spectrumExciter;
 				spectrumExciter = ((float*)cep)[4];
-				if (spectrumEnabled || oldE != spectrumExciter) {
-					spectrumEnabled = 0;
+				if (spectrumEnabled && oldE != spectrumExciter) {
 					spectrumExtend.SetExciter((float) spectrumExciter);
-					spectrumEnabled = 1;
 				}
                 if(replyData!=NULL)*replyData = 0;
 				return 0;
@@ -932,11 +947,9 @@ int32_t EffectDSPMain::command(uint32_t cmdCode, uint32_t cmdSize, void* pCmdDat
 				float_t oldM = fSurroundMid;
 				fSurroundWide = ((float*)cep)[4];
 				fSurroundMid = ((float*)cep)[5];
-				if (fSurroundEnabled || (oldW != fSurroundWide || oldM != fSurroundMid)) {
-					fSurroundEnabled = 0;
+				if (fSurroundEnabled && (oldW != fSurroundWide || oldM != fSurroundMid)) {
 					colorfulMusic.SetWidenValue(fSurroundWide);
 					colorfulMusic.SetMidImageValue(fSurroundMid);
-					fSurroundEnabled = 1;
 				}
                 if(replyData!=NULL)*replyData = 0;
 				return 0;
@@ -1445,6 +1458,8 @@ int32_t EffectDSPMain::process(audio_buffer_t *in, audio_buffer_t *out)
 					ramp += 0.05;
 				if (compressionEnabled)
 					sf_compressor_process(&compressor, DSPbufferLength, inputBuffer[0], inputBuffer[1], inputBuffer[0], inputBuffer[1]);
+				if (AXEnabled)
+					analogX.Process(inputBuffer[0], inputBuffer[1], DSPbufferLength);
 				if (viperddcEnabled)
 				{
 					for (i = 0; i < DSPbufferLength; i++)
@@ -1593,6 +1608,8 @@ int32_t EffectDSPMain::process(audio_buffer_t *in, audio_buffer_t *out)
 					ramp += 0.05;
 				if (compressionEnabled)
 					sf_compressor_process(&compressor, DSPbufferLength, inputBuffer[0], inputBuffer[1], inputBuffer[0], inputBuffer[1]);
+				if (AXEnabled)
+					analogX.Process(inputBuffer[0], inputBuffer[1], DSPbufferLength);
 				if (viperddcEnabled)
 				{
 					for (i = 0; i < DSPbufferLength; i++)
@@ -1741,6 +1758,8 @@ int32_t EffectDSPMain::process(audio_buffer_t *in, audio_buffer_t *out)
 					ramp += 0.05;
 				if (compressionEnabled)
 					sf_compressor_process(&compressor, DSPbufferLength, inputBuffer[0], inputBuffer[1], inputBuffer[0], inputBuffer[1]);
+				if (AXEnabled)
+					analogX.Process(inputBuffer[0], inputBuffer[1], DSPbufferLength);
 				if (viperddcEnabled)
 				{
 					for (i = 0; i < DSPbufferLength; i++)

@@ -759,6 +759,28 @@ void *ctl_thread_loop(void *self)
                             SNDERR("FSURROUND_DEPTH value out of range. Accepted values are: [0-1000]");
                         }
                     }
+                    else if(!strcmp(param, "ANALOGX_ENABLE")) {
+                       int8_t v = atoi(val);
+                       if(v == 0 || v == 1) {
+                            jdsp->pCtl[jdsp->pCtlQidx].i8 = v;
+                            jdsp->pCtl[jdsp->pCtlQidx].param = PROP_ANALOGX_ENABLE;
+                            jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
+                            jdsp->pCtlQidx++;
+                        } else {
+                            SNDERR("ANALOGX_ENABLE value out of range. Accepted values are: [0|1]");
+                        }
+                    }
+                    else if(!strcmp(param, "ANALOGX_MODEL")) {
+                       int16_t v = atoi(val);
+                       if(v >= 0 && v <= 3) {
+                            jdsp->pCtl[jdsp->pCtlQidx].i16 = v;
+                            jdsp->pCtl[jdsp->pCtlQidx].param = PROP_ANALOGX_MODEL;
+                            jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
+                            jdsp->pCtlQidx++;
+                        } else {
+                            SNDERR("ANALOGX_MODEL value out of range. Accepted values are: [0-3]");
+                        }
+                    }
                 memset(ctl_buf, 0, CTL_BUFFSIZE);
                 if(jdsp->pCtlQidx >= CMD_QUEUE_LEN)
                     jdsp->pCtlQidx = 0;
@@ -1103,6 +1125,16 @@ static void jdspfx_set_property(snd_pcm_jdspfx_t *self) {
                     command_set_px4_vx2x1(self->effectDspMain, 1213, (int16_t)self->fs_depth);
                 }
                     break;
+                case PROP_ANALOGX_ENABLE: {
+                    self->ax_enabled = self->pCtl[i].i8;
+                    command_set_px4_vx2x1(self->effectDspMain, 1214, self->ax_enabled);
+                }
+                    break;
+                case PROP_ANALOGX_MODEL: {
+                    self->ax_model = self->pCtl[i].i16;
+                    command_set_px4_vx2x1(self->effectDspMain, 1215, (int16_t)self->ax_model);
+                }
+                    break;
                 default:
                     SNDERR("Invalid property: %d", self->pCtl[i].param);
                     break;
@@ -1220,6 +1252,12 @@ static void sync_all_parameters(snd_pcm_jdspfx_t *self) {
                           1503, self->fs_wide, self->fs_mid);
     command_set_px4_vx2x1(self->effectDspMain,
                           1207, self->fs_enabled);
+
+    // analogx
+    command_set_px4_vx2x1(self->effectDspMain,
+                          1214, self->ax_enabled);
+    command_set_px4_vx2x1(self->effectDspMain,
+                          1215, self->ax_model);
 }
 
 static snd_pcm_sframes_t jdsp_transfer(snd_pcm_extplug_t *ext,
@@ -1388,6 +1426,8 @@ static int jdsp_init(snd_pcm_extplug_t *ext)
     jdsp->fs_depth = 1;
     jdsp->fs_mid = 1.0;
     jdsp->fs_wide = 0.0;
+    jdsp->ax_enabled = FALSE;
+    jdsp->ax_model = 0;
 
     jdsp->pCtl = (jdsp_param_t *) malloc(CMD_QUEUE_LEN * sizeof(jdsp_param_t));
     for(int i = 0; i < CMD_QUEUE_LEN; i++) {

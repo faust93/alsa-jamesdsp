@@ -86,7 +86,10 @@ enum {
     PROP_FSURROUND_ENABLE,
     PROP_FSURROUND_DEPTH,
     PROP_FSURROUND_WIDE,
-    PROP_FSURROUND_MID
+    PROP_FSURROUND_MID,
+    /* AnalogX */
+    PROP_ANALOGX_ENABLE,
+    PROP_ANALOGX_MODEL
 };
 
 typedef struct jdsp_param_s {
@@ -222,6 +225,10 @@ typedef struct snd_pcm_jdspfx {
     float_t fs_wide;
     float_t fs_mid;
 
+    // VFX_RE AnalogX
+    int8_t ax_enabled;
+    int16_t ax_model;
+
     audio_buffer_t *in;
     audio_buffer_t *out;
 
@@ -299,6 +306,8 @@ int jdsp_cfg_write(snd_pcm_jdspfx_t *self){
     fprintf(fn, "FSURROUND_DEPTH=%d\n", self->fs_depth);
     fprintf(fn, "FSURROUND_WIDE=%f\n", self->fs_wide);
     fprintf(fn, "FSURROUND_MID=%f\n", self->fs_mid);
+    fprintf(fn, "ANALOGX_ENABLE=%d\n", self->ax_enabled);
+    fprintf(fn, "ANALOGX_MODEL=%d\n", self->ax_model);
     fclose(fn);
     return 0;
 }
@@ -816,6 +825,22 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                         self->fs_mid = v;
                     } else {
                         printf("FSURROUND_MID value out of range. Accepted values are: [0.0000-10.0000]\n");
+                    }
+                }
+                else if(!strcmp(param, "ANALOGX_ENABLE")) {
+                    int8_t v = atoi(val);
+                    if(v == 0 || v == 1) {
+                        self->ax_enabled = v;
+                    } else {
+                        printf("ANALOGX_ENABLE value out of range. Accepted values are: [0|1]\n");
+                    }
+                }
+                else if(!strcmp(param, "ANALOGX_MODEL")) {
+                    int16_t v = atoi(val);
+                    if(v >= 0 && v <= 3) {
+                        self->ax_model = v;
+                    } else {
+                        printf("ANALOGX_MODEL value out of range. Accepted values are: [0-3]\n");
                     }
                 }
                 lines++;
