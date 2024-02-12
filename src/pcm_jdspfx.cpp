@@ -781,6 +781,94 @@ void *ctl_thread_loop(void *self)
                             SNDERR("ANALOGX_MODEL value out of range. Accepted values are: [0-3]");
                         }
                     }
+                    else if(!strcmp(param, "DS_ENABLE")) {
+                       int8_t v = atoi(val);
+                       if(v == 0 || v == 1) {
+                            jdsp->pCtl[jdsp->pCtlQidx].i8 = v;
+                            jdsp->pCtl[jdsp->pCtlQidx].param = PROP_DS_ENABLE;
+                            jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
+                            jdsp->pCtlQidx++;
+                        } else {
+                            SNDERR("DS_ENABLE value out of range. Accepted values are: [0|1]");
+                        }
+                    }
+                    else if(!strcmp(param, "DS_BASSGAIN")) {
+                       float_t v = atof(val);
+                       if(v >= 0.0 && v <= 100.0) {
+                            jdsp->pCtl[jdsp->pCtlQidx].f32 = v;
+                            jdsp->pCtl[jdsp->pCtlQidx].param = PROP_DS_BASSGAIN;
+                            jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
+                            jdsp->pCtlQidx++;
+                        } else {
+                            SNDERR("DS_BASSGAIN value out of range. Accepted values are: [0.0-100.0] (float)");
+                        }
+                    }
+                    else if(!strcmp(param, "DS_SIDEGAINX")) {
+                       float_t v = atof(val);
+                       if(v >= 0.0 && v <= 100.0) {
+                            jdsp->pCtl[jdsp->pCtlQidx].f32 = v;
+                            jdsp->pCtl[jdsp->pCtlQidx].param = PROP_DS_SIDEGAINX;
+                            jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
+                            jdsp->pCtlQidx++;
+                        } else {
+                            SNDERR("DS_SIDEGAINX value out of range. Accepted values are: [0.0-100.0] (float)");
+                        }
+                    }
+                    else if(!strcmp(param, "DS_SIDEGAINY")) {
+                       float_t v = atof(val);
+                       if(v >= 0.0 && v <= 100.0) {
+                            jdsp->pCtl[jdsp->pCtlQidx].f32 = v;
+                            jdsp->pCtl[jdsp->pCtlQidx].param = PROP_DS_SIDEGAINY;
+                            jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
+                            jdsp->pCtlQidx++;
+                        } else {
+                            SNDERR("DS_SIDEGAINY value out of range. Accepted values are: [0.0-100.0] (float)");
+                        }
+                    }
+                    else if(!strcmp(param, "DS_COEFFS_X_HIGH")) {
+                       int16_t v = atoi(val);
+                       if(v >= 0 && v <= 12000) {
+                            jdsp->pCtl[jdsp->pCtlQidx].i16 = v;
+                            jdsp->pCtl[jdsp->pCtlQidx].param = PROP_DS_COEFFS_X_HIGH;
+                            jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
+                            jdsp->pCtlQidx++;
+                        } else {
+                            SNDERR("DS_COEFFS_X_HIGH value out of range. Accepted values are: [0-12000]");
+                        }
+                    }
+                    else if(!strcmp(param, "DS_COEFFS_X_LOW")) {
+                       int16_t v = atoi(val);
+                       if(v >= 0 && v <= 12000) {
+                            jdsp->pCtl[jdsp->pCtlQidx].i16 = v;
+                            jdsp->pCtl[jdsp->pCtlQidx].param = PROP_DS_COEFFS_X_LOW;
+                            jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
+                            jdsp->pCtlQidx++;
+                        } else {
+                            SNDERR("DS_COEFFS_X_LOW value out of range. Accepted values are: [0-12000]");
+                        }
+                    }
+                    else if(!strcmp(param, "DS_COEFFS_Y_HIGH")) {
+                       int16_t v = atoi(val);
+                       if(v >= 0 && v <= 12000) {
+                            jdsp->pCtl[jdsp->pCtlQidx].i16 = v;
+                            jdsp->pCtl[jdsp->pCtlQidx].param = PROP_DS_COEFFS_Y_HIGH;
+                            jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
+                            jdsp->pCtlQidx++;
+                        } else {
+                            SNDERR("DS_COEFFS_Y_HIGH value out of range. Accepted values are: [0-12000]");
+                        }
+                    }
+                    else if(!strcmp(param, "DS_COEFFS_Y_LOW")) {
+                       int16_t v = atoi(val);
+                       if(v >= 0 && v <= 12000) {
+                            jdsp->pCtl[jdsp->pCtlQidx].i16 = v;
+                            jdsp->pCtl[jdsp->pCtlQidx].param = PROP_DS_COEFFS_Y_LOW;
+                            jdsp->pCtl[jdsp->pCtlQidx].pUpdate = true;
+                            jdsp->pCtlQidx++;
+                        } else {
+                            SNDERR("DS_COEFFS_Y_LOW value out of range. Accepted values are: [0-12000]");
+                        }
+                    }
                 memset(ctl_buf, 0, CTL_BUFFSIZE);
                 if(jdsp->pCtlQidx >= CMD_QUEUE_LEN)
                     jdsp->pCtlQidx = 0;
@@ -1135,6 +1223,46 @@ static void jdspfx_set_property(snd_pcm_jdspfx_t *self) {
                     command_set_px4_vx2x1(self->effectDspMain, 1215, (int16_t)self->ax_model);
                 }
                     break;
+                case PROP_DS_ENABLE: {
+                    self->ds_enabled = self->pCtl[i].i8;
+                    command_set_px4_vx2x1(self->effectDspMain, 1216, self->ds_enabled);
+                }
+                    break;
+                case PROP_DS_BASSGAIN: {
+                    self->ds_bassgain = self->pCtl[i].f32;
+                    command_set_px4_vx8x2p(self->effectDspMain, 1504, self->ds_bassgain, 0);
+                }
+                    break;
+                case PROP_DS_SIDEGAINX: {
+                    self->ds_sidegain_x = self->pCtl[i].f32;
+                    command_set_px4_vx8x2p(self->effectDspMain, 1505, self->ds_sidegain_x, self->ds_sidegain_y);
+                }
+                    break;
+                case PROP_DS_SIDEGAINY: {
+                    self->ds_sidegain_y = self->pCtl[i].f32;
+                    command_set_px4_vx8x2p(self->effectDspMain, 1505, self->ds_sidegain_x, self->ds_sidegain_y);
+                }
+                    break;
+                case PROP_DS_COEFFS_X_HIGH: {
+                    self->ds_coeffsx_high = self->pCtl[i].i16;
+                    command_set_px4_vx2x2(self->effectDspMain, 187, (int16_t)self->ds_coeffsx_high,(int16_t)self->ds_coeffsx_low);
+                }
+                    break;
+                case PROP_DS_COEFFS_X_LOW: {
+                    self->ds_coeffsx_low = self->pCtl[i].i16;
+                    command_set_px4_vx2x2(self->effectDspMain, 187, (int16_t)self->ds_coeffsx_high,(int16_t)self->ds_coeffsx_low);
+                }
+                    break;
+                case PROP_DS_COEFFS_Y_HIGH: {
+                    self->ds_coeffsy_high = self->pCtl[i].i16;
+                    command_set_px4_vx2x2(self->effectDspMain, 186, (int16_t)self->ds_coeffsy_high,(int16_t)self->ds_coeffsy_low);
+                }
+                    break;
+                case PROP_DS_COEFFS_Y_LOW: {
+                    self->ds_coeffsy_low = self->pCtl[i].i16;
+                    command_set_px4_vx2x2(self->effectDspMain, 186, (int16_t)self->ds_coeffsy_high,(int16_t)self->ds_coeffsy_low);
+                }
+                    break;
                 default:
                     SNDERR("Invalid property: %d", self->pCtl[i].param);
                     break;
@@ -1258,6 +1386,18 @@ static void sync_all_parameters(snd_pcm_jdspfx_t *self) {
                           1214, self->ax_enabled);
     command_set_px4_vx2x1(self->effectDspMain,
                           1215, self->ax_model);
+
+    // dynamic system
+    command_set_px4_vx2x1(self->effectDspMain,
+                          1216, self->ds_enabled);
+    command_set_px4_vx8x2p(self->effectDspMain,
+                          1504, self->ds_bassgain, 0);
+    command_set_px4_vx8x2p(self->effectDspMain,
+                          1505, self->ds_sidegain_x, self->ds_sidegain_y);
+    command_set_px4_vx2x2(self->effectDspMain,
+                          187, (int16_t)self->ds_coeffsx_high,(int16_t)self->ds_coeffsx_low);
+    command_set_px4_vx2x2(self->effectDspMain,
+                          186, (int16_t)self->ds_coeffsy_high,(int16_t)self->ds_coeffsy_low);
 }
 
 static snd_pcm_sframes_t jdsp_transfer(snd_pcm_extplug_t *ext,
@@ -1428,6 +1568,14 @@ static int jdsp_init(snd_pcm_extplug_t *ext)
     jdsp->fs_wide = 0.0;
     jdsp->ax_enabled = FALSE;
     jdsp->ax_model = 0;
+    jdsp->ds_enabled = FALSE;
+    jdsp->ds_bassgain = 1.0;
+    jdsp->ds_sidegain_x = 1.0;
+    jdsp->ds_sidegain_y = 1.0;
+    jdsp->ds_coeffsx_high = 80;
+    jdsp->ds_coeffsx_low = 120;
+    jdsp->ds_coeffsy_high = 11020;
+    jdsp->ds_coeffsy_low = 40;
 
     jdsp->pCtl = (jdsp_param_t *) malloc(CMD_QUEUE_LEN * sizeof(jdsp_param_t));
     for(int i = 0; i < CMD_QUEUE_LEN; i++) {

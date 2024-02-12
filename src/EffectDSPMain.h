@@ -6,6 +6,7 @@
 #include "viper/effects/SpectrumExtend.h"
 #include "viper/effects/ColorfulMusic.h"
 #include "viper/effects/AnalogX.h"
+#include "viper/effects/DynamicSystem.h"
 extern "C"
 {
 #include "bs2b.h"
@@ -42,6 +43,7 @@ typedef struct reverbdata_s {
     double rt60;           // reverb time decay [0.1 to 30]
     double delay;          // seconds, amount of delay [-0.5 to 0.5]
 } reverbdata_t;
+
 class EffectDSPMain : public Effect
 {
 protected:
@@ -87,6 +89,7 @@ protected:
 	SpectrumExtend spectrumExtend;
 	ColorfulMusic colorfulMusic;
 	AnalogX analogX;
+	DynamicSystem dynamicSystem;
 
 	iirfilter_t iir;
 //	Wavechild670 *compressor670;
@@ -98,9 +101,9 @@ protected:
 	double pregain, threshold, knee, ratio, attack, release, tubedrive, bassBoostCentreFreq, convGaindB, mMatrixMCoeff, mMatrixSCoeff, IIRfreq, IIRqfact, IIRgain;
 	int16_t bassBoostStrength, bassBoostFilterType, eqFilterType, bs2bLv, compressionEnabled, bassBoostEnabled, equalizerEnabled, reverbEnabled,
 	stereoWidenEnabled, convolverEnabled, convolverReady, bassLpReady, eqFIRReady, analogModelEnable, bs2bEnabled, viperddcEnabled, IIRenabled, spectrumEnabled, fSurroundEnabled;
-	int16_t mPreset, samplesInc, stringIndex, impChannels, previousimpChannels, bs2bfcut, bs2bfeed, IIRfilter, fSurroundDepth, AXEnabled, AXModel;
-	float_t spectrumExciter, fSurroundWide, fSurroundMid;
-	uint32_t spectrumFreq;
+	int16_t mPreset, samplesInc, stringIndex, impChannels, previousimpChannels, bs2bfcut, bs2bfeed, IIRfilter, fSurroundDepth, AXEnabled, AXModel, DSenabled;
+	float_t spectrumExciter, fSurroundWide, fSurroundMid, DSsideGainX, DSsideGainY, DSbassGain;
+	uint32_t spectrumFreq, DSXcoeffsLow, DSXcoeffsHigh, DSYcoeffsLow, DSYcoeffsHigh;
 
     reverbdata_t *r = NULL;
 

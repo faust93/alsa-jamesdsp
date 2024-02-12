@@ -89,7 +89,16 @@ enum {
     PROP_FSURROUND_MID,
     /* AnalogX */
     PROP_ANALOGX_ENABLE,
-    PROP_ANALOGX_MODEL
+    PROP_ANALOGX_MODEL,
+    /* Dynamic System */
+    PROP_DS_ENABLE,
+    PROP_DS_BASSGAIN,
+    PROP_DS_SIDEGAINX,
+    PROP_DS_SIDEGAINY,
+    PROP_DS_COEFFS_X_HIGH,
+    PROP_DS_COEFFS_X_LOW,
+    PROP_DS_COEFFS_Y_HIGH,
+    PROP_DS_COEFFS_Y_LOW
 };
 
 typedef struct jdsp_param_s {
@@ -229,6 +238,16 @@ typedef struct snd_pcm_jdspfx {
     int8_t ax_enabled;
     int16_t ax_model;
 
+    // VFX_RE Dynamic System
+    int8_t ds_enabled;
+    float_t ds_bassgain;
+    float_t ds_sidegain_x;
+    float_t ds_sidegain_y;
+    int32_t ds_coeffsx_high;
+    int32_t ds_coeffsx_low;
+    int32_t ds_coeffsy_high;
+    int32_t ds_coeffsy_low;
+
     audio_buffer_t *in;
     audio_buffer_t *out;
 
@@ -308,6 +327,14 @@ int jdsp_cfg_write(snd_pcm_jdspfx_t *self){
     fprintf(fn, "FSURROUND_MID=%f\n", self->fs_mid);
     fprintf(fn, "ANALOGX_ENABLE=%d\n", self->ax_enabled);
     fprintf(fn, "ANALOGX_MODEL=%d\n", self->ax_model);
+    fprintf(fn, "DS_ENABLE=%d\n", self->ds_enabled);
+    fprintf(fn, "DS_BASSGAIN=%f\n", self->ds_bassgain);
+    fprintf(fn, "DS_SIDEGAINX=%f\n", self->ds_sidegain_x);
+    fprintf(fn, "DS_SIDEGAINY=%f\n", self->ds_sidegain_y);
+    fprintf(fn, "DS_COEFFS_X_HIGH=%d\n", self->ds_coeffsx_high);
+    fprintf(fn, "DS_COEFFS_X_LOW=%d\n", self->ds_coeffsx_low);
+    fprintf(fn, "DS_COEFFS_Y_HIGH=%d\n", self->ds_coeffsy_high);
+    fprintf(fn, "DS_COEFFS_Y_LOW=%d\n", self->ds_coeffsy_low);
     fclose(fn);
     return 0;
 }
@@ -841,6 +868,70 @@ int jdsp_cfg_read(snd_pcm_jdspfx_t *self) {
                         self->ax_model = v;
                     } else {
                         printf("ANALOGX_MODEL value out of range. Accepted values are: [0-3]\n");
+                    }
+                }
+                else if(!strcmp(param, "DS_ENABLE")) {
+                    int8_t v = atoi(val);
+                    if(v == 0 || v == 1) {
+                        self->ds_enabled = v;
+                    } else {
+                        printf("DS_ENABLE value out of range. Accepted values are: [0|1]\n");
+                    }
+                }
+                else if(!strcmp(param, "DS_BASSGAIN")) {
+                    float_t v = atof(val);
+                    if(v >= 0.0 && v <= 100.0) {
+                        self->ds_bassgain = v;
+                    } else {
+                        printf("DS_BASSGAIN value out of range. Accepted values are: [0.0000-100.0000]\n");
+                    }
+                }
+                else if(!strcmp(param, "DS_SIDEGAINX")) {
+                    float_t v = atof(val);
+                    if(v >= 0.0 && v <= 100.0) {
+                        self->ds_sidegain_x = v;
+                    } else {
+                        printf("DS_SIDEGAINX value out of range. Accepted values are: [0.0000-100.0000]\n");
+                    }
+                }
+                else if(!strcmp(param, "DS_SIDEGAINY")) {
+                    float_t v = atof(val);
+                    if(v >= 0.0 && v <= 100.0) {
+                        self->ds_sidegain_y = v;
+                    } else {
+                        printf("DS_SIDEGAINY value out of range. Accepted values are: [0.0000-100.0000]\n");
+                    }
+                }
+                else if(!strcmp(param, "DS_COEFFS_X_HIGH")) {
+                    int16_t v = atoi(val);
+                    if(v >= 0 && v <= 12000) {
+                        self->ds_coeffsx_high = v;
+                    } else {
+                        printf("DS_COEFFS_X_HIGH value out of range. Accepted values are: [0-12000]\n");
+                    }
+                }
+                else if(!strcmp(param, "DS_COEFFS_X_LOW")) {
+                    int16_t v = atoi(val);
+                    if(v >= 0 && v <= 12000) {
+                        self->ds_coeffsx_low = v;
+                    } else {
+                        printf("DS_COEFFS_X_LOW value out of range. Accepted values are: [0-12000]\n");
+                    }
+                }
+                else if(!strcmp(param, "DS_COEFFS_Y_HIGH")) {
+                    int16_t v = atoi(val);
+                    if(v >= 0 && v <= 12000) {
+                        self->ds_coeffsy_high = v;
+                    } else {
+                        printf("DS_COEFFS_Y_HIGH value out of range. Accepted values are: [0-12000]\n");
+                    }
+                }
+                else if(!strcmp(param, "DS_COEFFS_Y_LOW")) {
+                    int16_t v = atoi(val);
+                    if(v >= 0 && v <= 12000) {
+                        self->ds_coeffsy_low = v;
+                    } else {
+                        printf("DS_COEFFS_Y_LOW value out of range. Accepted values are: [0-12000]\n");
                     }
                 }
                 lines++;

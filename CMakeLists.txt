@@ -26,12 +26,17 @@ set(JDSP_SRC
     src/viper/effects/SpectrumExtend.cpp
     src/viper/effects/ColorfulMusic.cpp
     src/viper/effects/AnalogX.cpp
+    src/viper/effects/DynamicSystem.cpp
     src/viper/utils/Harmonic.cpp
     src/viper/utils/MultiBiquad.cpp
     src/viper/utils/Biquad.cpp
     src/viper/utils/DepthSurround.cpp
     src/viper/utils/Stereo3DSurround.cpp
     src/viper/utils/TimeConstDelay.cpp
+    src/viper/utils/DynamicBass.cpp
+    src/viper/utils/IIR_1st.cpp
+    src/viper/utils/IIR_NOrder_BW_LH.cpp
+    src/viper/utils/PolesFilter.cpp
     src/iirfilters.c
     src/valve/12ax7amp/Tube.c
     src/valve/12ax7amp/wdfcircuits_triode.c

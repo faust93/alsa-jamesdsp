@@ -636,6 +636,22 @@ int32_t EffectDSPMain::command(uint32_t cmdCode, uint32_t cmdSize, void* pCmdDat
                 if(replyData!=NULL)*replyData = 0;
 				return 0;
 			}
+			else if (cmd == 1216)
+			{
+				int16_t val = ((int16_t *)cep)[8];
+				if (val) {
+					dynamicSystem.SetEnable(true);
+					dynamicSystem.SetSamplingRate(mSamplingRate);
+					dynamicSystem.Reset();
+					DSenabled = 1;
+				}
+				else {
+					dynamicSystem.SetEnable(false);
+					DSenabled = 0;
+				}
+                if(replyData!=NULL)*replyData = 0;
+				return 0;
+			}
 			else if (cmd == 1215)
 			{
 				int16_t oldM = AXModel;
@@ -855,6 +871,32 @@ int32_t EffectDSPMain::command(uint32_t cmdCode, uint32_t cmdSize, void* pCmdDat
                 if (replyData != NULL)*replyData = 0;
                 return 0;
             }
+            else if (cmd == 186)
+            {
+				int16_t oldh = DSYcoeffsHigh;
+				int16_t oldl = DSYcoeffsLow;
+                DSYcoeffsHigh = ((int16_t *) cep)[8];
+                DSYcoeffsLow = ((int16_t *) cep)[9];
+                if (DSenabled && ((int16_t)DSYcoeffsHigh != oldh || (int16_t)DSYcoeffsLow != oldl))
+                {
+					dynamicSystem.SetYCoeffs(DSYcoeffsLow, DSYcoeffsHigh);
+                }
+                if(replyData!=NULL)*replyData = 0;
+                return 0;
+            }
+            else if (cmd == 187)
+            {
+				int16_t oldh = DSXcoeffsHigh;
+				int16_t oldl = DSXcoeffsLow;
+                DSXcoeffsHigh = ((int16_t *) cep)[8];
+                DSXcoeffsLow = ((int16_t *) cep)[9];
+                if (DSenabled && ((int16_t)DSXcoeffsHigh != oldh || (int16_t)DSXcoeffsLow != oldl))
+                {
+					dynamicSystem.SetXCoeffs(DSXcoeffsLow, DSXcoeffsHigh);
+                }
+                if(replyData!=NULL)*replyData = 0;
+                return 0;
+            }
             else if (cmd == 188)
             {
 				int16_t oldFcut = bs2bfcut;
@@ -950,6 +992,28 @@ int32_t EffectDSPMain::command(uint32_t cmdCode, uint32_t cmdSize, void* pCmdDat
 				if (fSurroundEnabled && (oldW != fSurroundWide || oldM != fSurroundMid)) {
 					colorfulMusic.SetWidenValue(fSurroundWide);
 					colorfulMusic.SetMidImageValue(fSurroundMid);
+				}
+                if(replyData!=NULL)*replyData = 0;
+				return 0;
+			}
+			else if (cmd == 1504)
+			{
+				float_t oldv = DSbassGain;
+				DSbassGain = ((float*)cep)[4];
+				if (DSenabled && oldv != DSbassGain) {
+					dynamicSystem.SetBassGain(DSbassGain);
+				}
+                if(replyData!=NULL)*replyData = 0;
+				return 0;
+			}
+			else if (cmd == 1505)
+			{
+				int16_t oldx = DSsideGainX;
+				float_t oldy = DSsideGainY;
+				DSsideGainX = (double)((float*)cep)[4];
+				DSsideGainY = (double)((float*)cep)[5];
+				if (DSenabled && (oldx != DSsideGainX || oldy != DSsideGainY)) {
+					dynamicSystem.SetSideGain(DSsideGainX, DSsideGainY);
 				}
                 if(replyData!=NULL)*replyData = 0;
 				return 0;
@@ -1357,6 +1421,8 @@ int32_t EffectDSPMain::process(audio_buffer_t *in, audio_buffer_t *out)
 					for (i = 0; i < DSPbufferLength; i++)
                         spectrumExtend.Process(&inputBuffer[0][i], &inputBuffer[1][i]);
 				}
+				if(DSenabled)
+					dynamicSystem.Process(inputBuffer[0], inputBuffer[1], DSPbufferLength);
 				if (bassBoostEnabled)
 				{
 					if (bassLpReady > 0)
@@ -1507,6 +1573,8 @@ int32_t EffectDSPMain::process(audio_buffer_t *in, audio_buffer_t *out)
 					for (i = 0; i < DSPbufferLength; i++)
                         spectrumExtend.Process(&inputBuffer[0][i], &inputBuffer[1][i]);
 				}
+				if(DSenabled)
+					dynamicSystem.Process(inputBuffer[0], inputBuffer[1], DSPbufferLength);
 				if (bassBoostEnabled)
 				{
 					if (bassLpReady > 0)
@@ -1657,6 +1725,8 @@ int32_t EffectDSPMain::process(audio_buffer_t *in, audio_buffer_t *out)
 					for (i = 0; i < DSPbufferLength; i++)
                         spectrumExtend.Process(&inputBuffer[0][i], &inputBuffer[1][i]);
 				}
+				if(DSenabled)
+					dynamicSystem.Process(inputBuffer[0], inputBuffer[1], DSPbufferLength);
 				if (bassBoostEnabled)
 				{
 					if (bassLpReady > 0)

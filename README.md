@@ -40,6 +40,7 @@ Effects:
 * Spectrum Extender ([VFX_RE port](https://github.com/AndroidAudioMods/ViPERFX_RE))
 * Field Surround (VFX_RE port)
 * AnalogX (VFX_RE port)
+* Dynamic System (VFX_RE port)
 
 ### Build & Install
 
@@ -150,6 +151,14 @@ FSURROUND_WIDE=2.564740
 FSURROUND_MID=2.016670
 ANALOGX_ENABLE=0
 ANALOGX_MODEL=2
+DS_ENABLE=0
+DS_BASSGAIN=1.128200
+DS_SIDEGAINX=17.192301
+DS_SIDEGAINY=3.314100
+DS_COEFFS_X_HIGH=9268
+DS_COEFFS_X_LOW=575
+DS_COEFFS_Y_HIGH=5988
+DS_COEFFS_Y_LOW=312
 ```
 
 ##### Change DSP properties in real time
@@ -233,3 +242,11 @@ There's a simple app as well used to control DSP properties using web browser [a
 | FSURROUND_MID             | Float | 0..10.0          | Field surround mid image                                                                                                                             |
 | ANALOGX_ENABLE            | Int   | 0..1             | AnalogX Enable                                                                                                                                       |
 | ANALOGX_MODEL             | Int   | 0..3             | AnaogX processing model                                                                                                                              |
+| DS_ENABLE                 | Int   | 0..1             | DynamicSystem enable                                                                                                                                 |
+| DS_BASSGAIN               | Float | 0..100.0         | DynamicSystem Bass Gain                                                                                                                              |
+| DS_SIDEGAINX              | Float | 0..100.0         | DynamicSystem SideX Gain                                                                                                                             |
+| DS_SIDEGAINY              | Float | 0..100.0         | DynamicSystem SideY Gain                                                                                                                             |
+| DS_COEFFS_X_HIGH          | Int   | 0..12000         | DynamicSystem X Pass Freq High                                                                                                                       |
+| DS_COEFFS_X_LOW           | Int   | 0..12000         | DynamicSystem X Pass Freq Low                                                                                                                        |
+| DS_COEFFS_Y_HIGH          | Int   | 0..12000         | DynamicSystem Y Pass Freq High                                                                                                                       |
+| DS_COEFFS_Y_LOW           | Int   | 0..12000         | DynamicSystem Y Pass Freq Low                                                                                                                        |
