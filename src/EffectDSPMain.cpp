@@ -642,6 +642,10 @@ int32_t EffectDSPMain::command(uint32_t cmdCode, uint32_t cmdSize, void* pCmdDat
 				if (val) {
 					dynamicSystem.SetEnable(true);
 					dynamicSystem.SetSamplingRate(mSamplingRate);
+					dynamicSystem.SetBassGain(DSbassGain);
+					dynamicSystem.SetYCoeffs(DSYcoeffsLow, DSYcoeffsHigh);
+					dynamicSystem.SetXCoeffs(DSXcoeffsLow, DSXcoeffsHigh);
+					dynamicSystem.SetSideGain(DSsideGainX, DSsideGainY);
 					dynamicSystem.Reset();
 					DSenabled = 1;
 				}
